@@ -7,7 +7,7 @@ app.use((req, res, next) => {
                "http://localhost:4200");
     res.header("Access-Control-Allow-Headers", 
                "Origin, X-Requested-With, Content-Type, Accept");
-    next();
+    next(); 
 });
 
 // route for handling requests from the Angular client
