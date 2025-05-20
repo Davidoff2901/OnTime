@@ -10,10 +10,5 @@ export class FestivalsService {
 
   constructor() { }
 
-  testGet(){
-    return this.http.get<Array<Festival>>("url");
-  }
-  testPost(){
-    // return this.http.post("url");
-  }
+ 
 }

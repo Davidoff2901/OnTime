@@ -6,7 +6,6 @@
 
 generator client {
   provider = "prisma-client-js"
-  output   = "../generated/prisma"
 }
 
 datasource db {
@@ -14,22 +13,32 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum Role {
+  USER
+  ADMIN
+  ORANISER
+}
+
 model Users {
-  id          String       @id @default(uuid())
-  username    String
-  password    String
-  email       String       @unique
-  role        String
-  festivals   Festivals[]  @relation("OrganisedFestivals")
-  tickets     Tickets[]
-  userLineups UserLineup[]
+  id           String       @id @default(uuid())
+  first_name   String
+  last_name    String
+  password     String
+  email        String       @unique
+  birthday     DateTime?
+  phone        String?      @unique
+  country_code String?
+  role         Role         @default(USER)
+  festivals    Festivals[]  @relation("OrganisedFestivals")
+  tickets      Tickets[]
+  userLineups  UserLineup[]
 }
 
 model Festivals {
   id          String   @id @default(uuid())
   organiserId String
   organiser   Users    @relation("OrganisedFestivals", fields: [organiserId], references: [id])
-  name        String
+  name        String   @unique
   location    Float[] // latitude/longitude 
   created_at  DateTime @default(now())
   start_date  DateTime
@@ -44,7 +53,8 @@ model Stages {
   id         String    @id @default(uuid())
   festivalId String
   festival   Festivals @relation(fields: [festivalId], references: [id])
-  name       String
+  name       String    @unique
+  created_at DateTime  @default(now())
 
   performances ArtistPerformance[]
 }
@@ -54,6 +64,7 @@ model ArtistPerformance {
   artist     Artists  @relation(fields: [artistId], references: [id])
   stageId    String
   stage      Stages   @relation(fields: [stageId], references: [id])
+  created_at DateTime @default(now())
   day        DateTime
   start_time DateTime
   end_time   DateTime
@@ -63,7 +74,7 @@ model ArtistPerformance {
 
 model Artists {
   id           String              @id @default(uuid())
-  name         String
+  name         String              @unique
   genre        String
   performances ArtistPerformance[]
   lineupItems  UserLineupItem[]
