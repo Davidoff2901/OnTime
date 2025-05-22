@@ -39,7 +39,8 @@ model Festivals {
   organiserId String
   organiser   Users    @relation("OrganisedFestivals", fields: [organiserId], references: [id])
   name        String   @unique
-  location    Float[] // latitude/longitude 
+  longitude   Float
+  latitude    Float
   created_at  DateTime @default(now())
   start_date  DateTime
   end_date    DateTime

@@ -21,6 +21,9 @@ export async function create(data: { name: string, organiserId: string, location
             if (target.includes('name')) {
                 throw new HttpError(409, 'Festival already exists');
             }
+            if (data.start_date >= data.end_date) {
+                throw new HttpError(400, 'Start date must be before end date');
+            }
         }
 
         throw new HttpError(500, 'Failed to create festival');

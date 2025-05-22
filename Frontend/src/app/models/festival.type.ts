@@ -1,3 +1,6 @@
 export type Festival = {
-    id: number;
+    name: string
+    location: number[]
+    start_date: Date
+    end_date: Date
 }
