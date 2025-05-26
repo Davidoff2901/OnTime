@@ -1,6 +1,7 @@
 import { Prisma } from "@prisma/client";
 import { db } from "../db/db";
 import { HttpError } from "../errors/httpError";
+import { getOrThrowError } from "../helpers/getOrThrowError";
 
 
 export async function findAll() {
@@ -23,13 +24,14 @@ export async function create(data: { name: string, festivalId: string, }) {
             }
         }
 
-        throw new HttpError(500, 'Failed to create festival');
+        throw new HttpError(500, 'Failed to create Stage');
     }
 };
-export async function update(id: string, data: { name?: string, location?: number[], start_date?: Date, end_date?: Date }) {
-    await findById(id);
+export async function update(id: string, data: { festivalId?: string, name?: string }) {
+    await getOrThrowError('stages', id, "Stage not found")
+
     try {
-        return await db.festivals.update({ where: { id }, data });
+        return await db.stages.update({ where: { id }, data });
     } catch (error: any) {
         if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002') {
             const target = (error.meta?.target as string[]) || [];
@@ -39,15 +41,16 @@ export async function update(id: string, data: { name?: string, location?: numbe
             }
         }
 
-        throw new HttpError(500, 'Failed to update user');
+        throw new HttpError(500, 'Failed to update stage');
     }
 };
 
 export async function deleteItem(id: string) {
-    await findById(id);
+    await getOrThrowError('stages', id, "Stage not found")
+
     try {
-        return await db.festivals.delete({ where: { id } });
+        return await db.stages.delete({ where: { id } });
     } catch {
-        throw new HttpError(500, 'Failed to delete festival');
+        throw new HttpError(500, 'Failed to delete stage');
     }
 };

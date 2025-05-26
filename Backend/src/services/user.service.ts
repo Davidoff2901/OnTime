@@ -1,10 +1,17 @@
 import { Prisma } from "@prisma/client";
 import { db } from "../db/db";
 import { HttpError } from "../errors/httpError";
-
+import bcrypt from 'bcryptjs';
+import { getOrThrowError } from "../helpers/getOrThrowError";
 
 export async function findAllUsers() {
-    return await db.users.findMany();
+    // return await db.users.findMany({
+    //     orderBy: { first_name: 'desc' },
+    // });
+    const users = await db.users.findMany({
+        orderBy: { first_name: 'desc' },
+    });
+    return users.map(({ id, password, ...filtered }) => filtered)
 };
 export async function findUserById(id: string) {
     const user = await db.users.findUnique({ where: { id } });
@@ -13,7 +20,23 @@ export async function findUserById(id: string) {
 };
 export async function createUser(data: { first_name: string, last_name: string, password: string, email: string }) {
     try {
-        return await db.users.create({ data });
+        const hashedPassword = await bcrypt.hash(data.password, 10); // 10 is the salt rounds
+        return await db.users.create({
+            data: {
+                first_name: data.first_name,
+                last_name: data.last_name,
+                password: hashedPassword,
+                email: data.email
+            },
+            select: {
+                first_name: true,
+                last_name: true,
+                birthday: true,
+                country_code: true,
+                email: true,
+                phone: true
+            }
+        });
     } catch (error: any) {
         if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002') {
             const target = (error.meta?.target as string[]) || [];
@@ -32,7 +55,8 @@ export async function createUser(data: { first_name: string, last_name: string, 
     }
 };
 export async function updateUser(id: string, data: { first_name?: string, last_name?: string, password?: string, email?: string, phone_number?: string, birthday?: Date, country_code?: string, role?: any }) {
-    await findUserById(id); // Ensures user exists
+    await getOrThrowError('users', id, "User not found")
+
     try {
         return await db.users.update({ where: { id }, data });
     } catch (error: any) {
@@ -51,7 +75,7 @@ export async function updateUser(id: string, data: { first_name?: string, last_n
 };
 
 export const deleteUserById = async (id: string) => {
-    await findUserById(id); // Ensures user exists
+    await getOrThrowError('users', id, "User not found")
     try {
         return await db.users.delete({ where: { id } });
     } catch {

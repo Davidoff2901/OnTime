@@ -34,14 +34,16 @@ export class FestivalsAdminComponent {
       longitude: ['', Validators.required],
       start_date: ['', [Validators.required]],
       end_date: ['', Validators.required],
-      organiserId: ['']
+      organiserId: ['18c93b9a-3e86-460b-8cf7-f972ff81d67f']
     });
     this.artistForm = this.fb.group({
       name: ['', Validators.required],
       start_time: ['', Validators.required],
       end_time: ['', Validators.required],
     })
+
     this.festivalsService.getFestivals()
+
   }
   ngAfterViewInit(): void {
     this.initMap();

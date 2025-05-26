@@ -20,18 +20,20 @@ enum Role {
 }
 
 model Users {
-  id           String       @id @default(uuid())
+  id           String    @id @default(uuid())
   first_name   String
   last_name    String
   password     String
-  email        String       @unique
+  email        String    @unique
   birthday     DateTime?
-  phone        String?      @unique
+  phone        String?   @unique
   country_code String?
-  role         Role         @default(USER)
-  festivals    Festivals[]  @relation("OrganisedFestivals")
-  tickets      Tickets[]
-  userLineups  UserLineup[]
+  updated_at   DateTime  @default(now()) @updatedAt
+
+  role        Role         @default(USER)
+  festivals   Festivals[]  @relation("OrganisedFestivals")
+  tickets     Tickets[]
+  userLineups UserLineup[]
 }
 
 model Festivals {
@@ -42,6 +44,7 @@ model Festivals {
   longitude   Float
   latitude    Float
   created_at  DateTime @default(now())
+  updated_at  DateTime @default(now()) @updatedAt
   start_date  DateTime
   end_date    DateTime
 
@@ -56,6 +59,7 @@ model Stages {
   festival   Festivals @relation(fields: [festivalId], references: [id])
   name       String    @unique
   created_at DateTime  @default(now())
+  updated_at DateTime  @updatedAt
 
   performances ArtistPerformance[]
 }
@@ -74,9 +78,11 @@ model ArtistPerformance {
 }
 
 model Artists {
-  id           String              @id @default(uuid())
-  name         String              @unique
-  genre        String
+  id         String   @id @default(uuid())
+  name       String   @unique
+  genre      String
+  updated_at DateTime @updatedAt
+
   performances ArtistPerformance[]
   lineupItems  UserLineupItem[]
 }

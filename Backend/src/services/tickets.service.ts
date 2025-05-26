@@ -1,5 +1,6 @@
 import { db } from "../db/db";
 import { HttpError } from "../errors/httpError";
+import { getOrThrowError } from "../helpers/getOrThrowError";
 
 
 export async function findAll() {
@@ -7,9 +8,9 @@ export async function findAll() {
 };
 
 export async function findById(id: string) {
-    const stage = await db.stages.findUnique({ where: { id } });
-    if (!stage) throw new HttpError(404, 'Stage not found');
-    return stage;
+    const ticket = await db.stages.findUnique({ where: { id } });
+    if (!ticket) throw new HttpError(404, 'Ticket not found');
+    return ticket;
 };
 
 export async function create(data: { userId: string, festivalId: string, }) {
@@ -37,7 +38,8 @@ export async function create(data: { userId: string, festivalId: string, }) {
 // };
 
 export async function deleteItem(id: string) {
-    await findById(id);
+    await getOrThrowError('tickets', id, "Ticket not found")
+
     try {
         return await db.tickets.delete({ where: { id } });
     } catch {

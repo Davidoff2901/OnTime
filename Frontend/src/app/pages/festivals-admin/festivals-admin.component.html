@@ -40,6 +40,11 @@
 
 
     <form [formGroup]="artistForm">
+        <mat-form-field class="full-width">
+            <mat-label>Name</mat-label>
+            <input matInput formControlName="name" required />
+            <mat-error>Name is required</mat-error>
+        </mat-form-field>
         <mat-form-field>
             <mat-label>Start Date</mat-label>
             <input matInput [matTimepicker]="timepicker" formControlName="start_time" required />

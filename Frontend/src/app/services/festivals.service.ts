@@ -17,17 +17,6 @@ export class FestivalsService {
   constructor() { }
 
   getFestivals() {
-    // this.loading.set(true);
-    // this.error.set(null);
-
-    // this.http.get<Festival[]>(this.apiUrl).subscribe({
-    //   next: (data) => {
-    //     this.festivals.set(data);
-    //   },
-    //   error: (err) => {
-    //     this.error.set(err);
-    //   }
-    // });
     this.loading.set(true);
     this.error.set(null);
 
