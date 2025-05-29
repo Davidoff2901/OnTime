@@ -1,6 +1,6 @@
 import { db } from "../db/db";
-import { HttpError } from "../errors/httpError";
-import { getOrThrowError } from "../helpers/getOrThrowError";
+import { HttpError } from "../helpers/httpError";
+import { getByIdOrThrowError } from "../helpers/getOrThrowError";
 
 
 export async function findAll() {
@@ -38,7 +38,7 @@ export async function create(data: { userId: string, festivalId: string, }) {
 // };
 
 export async function deleteItem(id: string) {
-    await getOrThrowError('tickets', id, "Ticket not found")
+    await getByIdOrThrowError('tickets', id, "Ticket not found")
 
     try {
         return await db.tickets.delete({ where: { id } });

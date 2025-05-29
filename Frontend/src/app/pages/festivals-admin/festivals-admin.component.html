@@ -7,12 +7,12 @@
         </mat-form-field>
         <mat-form-field class="full-width">
             <mat-label>Latitude</mat-label>
-            <input matInput formControlName="latitude" required />
+            <input matInput formControlName="latitude" inputmode="numeric" type="number" required />
             <mat-error>Latitude is required</mat-error>
         </mat-form-field>
         <mat-form-field class="full-width">
             <mat-label>Longitude</mat-label>
-            <input matInput formControlName="longitude" required />
+            <input matInput formControlName="longitude" inputmode="numeric" type="number" required />
             <mat-error>Longitude is required</mat-error>
         </mat-form-field>
         <mat-form-field>
@@ -31,8 +31,9 @@
             <mat-datepicker #datepicker2></mat-datepicker>
             <mat-error>Date is required</mat-error>
         </mat-form-field>
-
-        <div id="map" style="height: 400px; margin-top: 1rem;"></div>
+        <div class="grid place-items-center">
+            <div id="map" class="cell" style="height: 500px; width: 70%; margin-top: 1rem;"></div>
+        </div>
         <button mat-raised-button color="primary" type="submit" [disabled]="festivalForm.invalid">
             Create Festival
         </button>
@@ -60,5 +61,4 @@
             <mat-error>Choose Date</mat-error>
         </mat-form-field>
     </form>
-
 </div>

@@ -6,7 +6,7 @@ import { MatTimepickerModule } from '@angular/material/timepicker';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { provideNativeDateAdapter } from '@angular/material/core';
 import * as L from 'leaflet';
-import { combineLatest, debounceTime, distinctUntilChanged, Subscription } from 'rxjs';
+import { debounceTime, distinctUntilChanged, Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-festivals-admin',
@@ -30,7 +30,7 @@ export class FestivalsAdminComponent {
   constructor(private fb: FormBuilder) {
     this.festivalForm = this.fb.group({
       name: ['', Validators.required],
-      latitude: ['', Validators.required],
+      latitude: ['', Validators.required, Validators.pattern(/^\d+(\.\d+)?$/)],
       longitude: ['', Validators.required],
       start_date: ['', [Validators.required]],
       end_date: ['', Validators.required],

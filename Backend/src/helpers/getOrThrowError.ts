@@ -1,5 +1,5 @@
 import { PrismaClient } from '@prisma/client';
-import { HttpError } from '../errors/httpError';
+import { HttpError } from './httpError';
 
 const db = new PrismaClient();
 
@@ -7,7 +7,7 @@ type ModelDelegate = {
     findUnique: (args: any) => Promise<any>;
 };
 
-export async function getOrThrowError<T extends keyof PrismaClient>(
+export async function getByIdOrThrowError<T extends keyof PrismaClient>(
     modelName: T,
     id: string,
     notFoundMessage = 'Item not found'

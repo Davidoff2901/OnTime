@@ -1,7 +1,7 @@
 import { Prisma } from "@prisma/client";
 import { db } from "../db/db";
-import { HttpError } from "../errors/httpError";
-import { getOrThrowError } from "../helpers/getOrThrowError";
+import { HttpError } from "../helpers/httpError";
+import { getByIdOrThrowError } from "../helpers/getOrThrowError";
 
 
 export async function findAll() {
@@ -28,7 +28,7 @@ export async function create(data: { name: string, genre: string }) {
     }
 };
 export async function update(id: string, data: { name?: string, genre?: string }) {
-    await getOrThrowError('artists', id, "Artist not found")
+    await getByIdOrThrowError('artists', id, "Artist not found")
 
     try {
         return await db.artists.update({ where: { id }, data });
@@ -46,7 +46,7 @@ export async function update(id: string, data: { name?: string, genre?: string }
 };
 
 export async function deleteItem(id: string) {
-    await getOrThrowError('artists', id, "Artist not found")
+    await getByIdOrThrowError('artists', id, "Artist not found")
     try {
         return await db.artists.delete({ where: { id } });
     } catch {

@@ -1,5 +1,5 @@
 import { db } from "../db/db";
-import { HttpError } from "../errors/httpError";
+import { HttpError } from "../helpers/httpError";
 
 
 export async function findById(id: string) {

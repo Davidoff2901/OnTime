@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import * as festivalsService from '../services/festival.service'
-import { handleError } from "../errors/httpError";
+import { handleError } from "../helpers/httpError";
 
 
 export async function getAllFestivals(req: Request, res: Response) {
@@ -8,7 +8,8 @@ export async function getAllFestivals(req: Request, res: Response) {
         const festivals = await festivalsService.findAll();
         res.json(festivals);
     } catch (err) {
-        res.status(500).json({ message: 'Failed to fetch festivals' });
+        // res.status(500).json({ message: 'Failed to fetch festivals' });
+        handleError(res, err);
     }
 };
 

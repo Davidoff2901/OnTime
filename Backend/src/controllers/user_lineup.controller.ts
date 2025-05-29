@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import * as lineupService from "../services/user_lineup.service"
-import { handleError } from "../errors/httpError";
+import { handleError } from "../helpers/httpError";
 
 
 export async function getLineup(req: Request, res: Response) {

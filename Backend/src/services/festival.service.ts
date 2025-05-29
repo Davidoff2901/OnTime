@@ -1,7 +1,7 @@
 import { Prisma } from "@prisma/client";
 import { db } from "../db/db";
-import { HttpError } from "../errors/httpError";
-import { getOrThrowError } from "../helpers/getOrThrowError";
+import { HttpError } from "../helpers/httpError";
+import { getByIdOrThrowError } from "../helpers/getOrThrowError";
 
 
 export async function findAll() {
@@ -25,6 +25,7 @@ export async function create(data: { name: string, organiserId: string, latitude
             }
         });
     } catch (error: any) {
+        console.log(error)
         if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002') {
             const target = (error.meta?.target as string[]) || [];
 
@@ -44,7 +45,7 @@ export async function create(data: { name: string, organiserId: string, latitude
     }
 };
 export async function update(id: string, data: { name?: string, location?: number[], start_date?: Date, end_date?: Date }) {
-    await getOrThrowError('festivals', id, "Festival not found")
+    await getByIdOrThrowError('festivals', id, "Festival not found")
     try {
         return await db.festivals.update({ where: { id }, data });
     } catch (error: any) {
@@ -61,7 +62,7 @@ export async function update(id: string, data: { name?: string, location?: numbe
 };
 
 export async function deleteItem(id: string) {
-    await getOrThrowError('festivals', id, "Festival not found")
+    await getByIdOrThrowError('festivals', id, "Festival not found")
     try {
         return await db.festivals.delete({ where: { id } });
     } catch {

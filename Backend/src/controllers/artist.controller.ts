@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import * as artistService from '../services/artist.service'
-import { handleError } from "../errors/httpError";
+import { handleError } from "../helpers/httpError";
 
 
 export async function getAllArtists(req: Request, res: Response) {

@@ -1,0 +1,28 @@
+<div>
+    <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+        <mat-form-field class="full-width">
+            <mat-label>Name</mat-label>
+            <input matInput formControlName="first_name" required />
+            <mat-error>Name is required</mat-error>
+        </mat-form-field>
+        <mat-form-field class="full-width">
+            <mat-label>Name</mat-label>
+            <input matInput formControlName="last_name" required />
+            <mat-error>Name is required</mat-error>
+        </mat-form-field>
+        <mat-form-field class="full-width">
+            <mat-label>Name</mat-label>
+            <input matInput formControlName="email" required />
+            <mat-error>Name is required</mat-error>
+        </mat-form-field>
+        <mat-form-field class="full-width">
+            <mat-label>Latitude</mat-label>
+            <input matInput formControlName="password" required />
+            <mat-error>Latitude is required</mat-error>
+        </mat-form-field>
+
+        <button mat-raised-button color="primary" type="submit">
+            Create Festival
+        </button>
+    </form>
+</div>

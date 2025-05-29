@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import * as stageService from '../services/stages.service'
-import { handleError } from "../errors/httpError";
+import { handleError } from "../helpers/httpError";
 
 
 export async function getAllStages(req: Request, res: Response) {

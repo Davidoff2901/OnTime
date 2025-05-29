@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import * as userService from "../services/user.service"
-import { handleError } from "../errors/httpError";
+import { handleError } from "../helpers/httpError";
 
 
 export async function getAllUsers(req: Request, res: Response) {
@@ -29,6 +29,15 @@ export async function createUser(req: Request, res: Response) {
         handleError(res, err);
     }
 };
+export async function login(req: Request, res: Response) {
+    try {
+        const token = await userService.loginUser(req.body);
+        res.json(token);
+    } catch (err) {
+        handleError(res, err);
+    }
+};
+
 
 export async function updateUser(req: Request, res: Response) {
     try {

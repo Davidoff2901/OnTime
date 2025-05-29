@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { db } from "../db/db";
 import * as ticketsService from '../services/tickets.service'
-import { handleError } from "../errors/httpError";
+import { handleError } from "../helpers/httpError";
 
 export async function getAllTickets(req: Request, res: Response) {
     try {
