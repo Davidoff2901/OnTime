@@ -37,6 +37,7 @@
         <button mat-raised-button color="primary" type="submit" [disabled]="festivalForm.invalid">
             Create Festival
         </button>
+        <div>{{this.festivalsService.error()}}</div>
     </form>
 
 

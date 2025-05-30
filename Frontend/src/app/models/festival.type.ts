@@ -1,6 +1,7 @@
 export type Festival = {
     name: string
-    location: number[]
+    latitude: number
+    longitude: number
     start_date: Date
     end_date: Date
 }

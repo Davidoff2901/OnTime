@@ -22,6 +22,12 @@ export class RegisterComponent {
     });
   }
   onSubmit(): void {
-    this.userService.createUser(this.registerForm.value)
+    this.userService.createUser(this.registerForm.value).subscribe({
+      next: res => {
+      },
+      error: err => {
+
+      }
+    })
   }
 }

@@ -13,6 +13,10 @@ export async function findById(id: string) {
     return festival;
 };
 export async function create(data: { name: string, organiserId: string, latitude: number, longitude: number, start_date: Date, end_date: Date }) {
+    if (data.start_date >= data.end_date) {
+        throw new HttpError(400, 'Start date must be before end date');
+    }
+
     try {
         return await db.festivals.create({
             data, select: {
@@ -38,9 +42,7 @@ export async function create(data: { name: string, organiserId: string, latitude
 
             throw new HttpError(400, `Cannot proceed: Missing related record for ${fieldName}.`);
         }
-        if (data.start_date >= data.end_date) {
-            throw new HttpError(400, 'Start date must be before end date');
-        }
+
         throw new HttpError(500, 'Failed to create festival');
     }
 };

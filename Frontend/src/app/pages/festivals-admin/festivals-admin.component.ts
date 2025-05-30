@@ -20,7 +20,6 @@ export class FestivalsAdminComponent {
   artistForm: FormGroup;
   festivalsService = inject(FestivalsService)
   festivals = this.festivalsService.festivals
-  loading = this.festivalsService.loading
 
   map!: L.Map;
   marker!: L.Marker;
@@ -30,7 +29,7 @@ export class FestivalsAdminComponent {
   constructor(private fb: FormBuilder) {
     this.festivalForm = this.fb.group({
       name: ['', Validators.required],
-      latitude: ['', Validators.required, Validators.pattern(/^\d+(\.\d+)?$/)],
+      latitude: ['', Validators.required],
       longitude: ['', Validators.required],
       start_date: ['', [Validators.required]],
       end_date: ['', Validators.required],
@@ -42,7 +41,15 @@ export class FestivalsAdminComponent {
       end_time: ['', Validators.required],
     })
 
-    this.festivalsService.getFestivals()
+    this.festivalsService.getFestivals().subscribe({
+      next: res => {
+        console.log(res)
+        this.festivalsService.festivals.set(res)
+      },
+      error: err => {
+        this.festivalsService.error.set(err)
+      }
+    })
 
   }
   ngAfterViewInit(): void {
@@ -114,7 +121,14 @@ export class FestivalsAdminComponent {
   }
   onSubmit(): void {
     if (this.festivalForm.valid) {
-      this.festivalsService.createFestival(this.festivalForm.value)
+      this.festivalsService.createFestival(this.festivalForm.value).subscribe({
+        next: res => {
+
+        },  
+        error: err => {
+          this.festivalsService.error.set(err.error.message)
+        }
+      })
     }
   }
 }

@@ -39,7 +39,7 @@ export async function createUser(data: { first_name: string, last_name: string, 
             }
         });
 
-        return user;
+        return { data: user };
 
     } catch (error: any) {
         if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002') {

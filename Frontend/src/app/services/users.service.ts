@@ -1,11 +1,22 @@
 import { inject, Injectable, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { catchError, finalize, of, tap } from 'rxjs';
+import { catchError, finalize, Observable, of, tap } from 'rxjs';
 
 interface CreateUserDto {
-    username: string;
+    first_name: string;
+    last_name: string;
     email: string;
     password: string;
+}
+interface RegisterResponse {
+    data: {
+        first_name: string;
+        last_name: string;
+        email: string;
+        birthday: Date
+        phone: string
+        country_code: string
+    }
 }
 
 @Injectable({
@@ -19,27 +30,11 @@ export class UserService {
 
     constructor() { }
 
-    createUser(data: CreateUserDto) {
-        return this.http.post(this.apiUrl + "/register", data).pipe(
-            tap(res => {
-                console.log(res)
-            }),
-            catchError(err => {
-                this.error.set(err?.message || 'An error occurred');
-                return of(null);
-            }),
-            finalize(() => this.loading.set(false))
-        ).subscribe();
+    createUser(data: CreateUserDto): Observable<RegisterResponse> {
+        return this.http.post<RegisterResponse>(this.apiUrl + "/register", data)
     }
 
-    loginUser(data: { identifier: string, password: string }) {
-        console.log(data)
-        return this.http.post(this.apiUrl + "/login", data).pipe(
-            tap(res => console.log(res)),
-            catchError(err => {
-                return (err);
-            }),
-            finalize(() => console.log('asd'))
-        ).subscribe();
+    loginUser(data: { identifier: string; password: string }): Observable<{ data: string }> {
+        return this.http.post<{ data: string }>(this.apiUrl + "/login", data);
     }
 }
