@@ -106,7 +106,7 @@ export async function updatePassword(id: string, data: { password?: string }) {
 
 }
 
-export const deleteUserById = async (id: string) => {
+export async function deleteUserById(id: string) {
     await getByIdOrThrowError('users', id, "User not found")
     try {
         return await db.users.delete({ where: { id } });
@@ -114,3 +114,16 @@ export const deleteUserById = async (id: string) => {
         throw new HttpError(500, 'Failed to delete user');
     }
 };
+
+export async function getUserIdByEmail(email: string) {
+    try {
+        return await db.users.findUnique({
+            where: { email },
+            select: {
+                id: true
+            }
+        })
+    } catch (error) {
+        throw new HttpError(404, "Couldn't find user");
+    }
+}

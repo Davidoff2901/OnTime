@@ -33,7 +33,7 @@ export class FestivalsAdminComponent {
       longitude: ['', Validators.required],
       start_date: ['', [Validators.required]],
       end_date: ['', Validators.required],
-      organiserId: ['18c93b9a-3e86-460b-8cf7-f972ff81d67f']
+      // organiserId: ['18c93b9a-3e86-460b-8cf7-f972ff81d67f']
     });
     this.artistForm = this.fb.group({
       name: ['', Validators.required],
@@ -43,7 +43,6 @@ export class FestivalsAdminComponent {
 
     this.festivalsService.getFestivals().subscribe({
       next: res => {
-        console.log(res)
         this.festivalsService.festivals.set(res)
       },
       error: err => {

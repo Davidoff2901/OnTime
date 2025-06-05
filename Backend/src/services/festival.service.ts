@@ -12,7 +12,7 @@ export async function findById(id: string) {
     if (!festival) throw new HttpError(404, 'Festival not found');
     return festival;
 };
-export async function create(data: { name: string, organiserId: string, latitude: number, longitude: number, start_date: Date, end_date: Date }) {
+export async function create(data: { name: string, organizerId: string, latitude: number, longitude: number, start_date: Date, end_date: Date }) {
     if (data.start_date >= data.end_date) {
         throw new HttpError(400, 'Start date must be before end date');
     }
@@ -29,7 +29,6 @@ export async function create(data: { name: string, organiserId: string, latitude
             }
         });
     } catch (error: any) {
-        console.log(error)
         if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002') {
             const target = (error.meta?.target as string[]) || [];
 

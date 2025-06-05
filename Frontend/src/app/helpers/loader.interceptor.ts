@@ -1,4 +1,3 @@
-// app/interceptors/loading.interceptor.ts
 import { HttpInterceptorFn } from '@angular/common/http';
 import { finalize } from 'rxjs';
 import { isLoading } from '../signals/loader.signal';

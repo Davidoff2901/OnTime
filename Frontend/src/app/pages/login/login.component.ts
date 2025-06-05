@@ -3,6 +3,7 @@ import { UserService } from '../../services/users.service';
 import { MATERIAL_FORM_IMPORTS } from '../../helpers/material-imports';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-login',
@@ -12,6 +13,7 @@ import { Router } from '@angular/router';
 })
 export class LoginComponent {
   userService = inject(UserService)
+  authService = inject(AuthService)
   loginForm: FormGroup;
 
   constructor(private fb: FormBuilder, private router: Router) {
@@ -21,13 +23,13 @@ export class LoginComponent {
     });
   }
   onSubmit(): void {
-    this.userService.loginUser(this.loginForm.value).subscribe({
+    this.authService.loginUser(this.loginForm.value).subscribe({
       next: res => {
         localStorage.setItem("token", res.data)
+        this.authService._token.set(res.data)
         this.router.navigate(["/lineup"])
       },
       error: err => {
-        console.log(err)
       }
     })
   }

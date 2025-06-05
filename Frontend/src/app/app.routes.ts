@@ -4,6 +4,8 @@ import { LineUpComponent } from './pages/line-up/line-up.component';
 import { FestivalsAdminComponent } from './pages/festivals-admin/festivals-admin.component';
 import { RegisterComponent } from './pages/register/register.component';
 import { LoginComponent } from './pages/login/login.component';
+import { MissingPageComponent } from './pages/missing-page/missing-page.component';
+import { authGuard } from './guards/auth.guard';
 
 export const routes: Routes = [{
     path: "",
@@ -13,12 +15,14 @@ export const routes: Routes = [{
 {
     path: "lineup",
     pathMatch: 'full',
+    canActivate: [authGuard],
     component: LineUpComponent
 },
 {
     path: "festivals-admin",
     pathMatch: 'full',
-    component: FestivalsAdminComponent
+    canActivate: [authGuard],
+    component: FestivalsAdminComponent,
 },
 // {
 //     path: "admin",
@@ -34,5 +38,10 @@ export const routes: Routes = [{
     path: "login",
     pathMatch: 'full',
     component: LoginComponent
+},
+{
+    path: "**",
+    pathMatch: 'full',
+    component: MissingPageComponent
 }
 ];

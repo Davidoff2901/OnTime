@@ -8,7 +8,6 @@ export async function getAllFestivals(req: Request, res: Response) {
         const festivals = await festivalsService.findAll();
         res.json(festivals);
     } catch (err) {
-        // res.status(500).json({ message: 'Failed to fetch festivals' });
         handleError(res, err);
     }
 };

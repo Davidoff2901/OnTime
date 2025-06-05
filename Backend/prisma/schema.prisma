@@ -16,7 +16,7 @@ datasource db {
 enum Role {
   USER
   ADMIN
-  ORANISER
+  ORANIZER
 }
 
 model Users {
@@ -31,15 +31,15 @@ model Users {
   updated_at   DateTime  @default(now()) @updatedAt
 
   role        Role         @default(USER)
-  festivals   Festivals[]  @relation("OrganisedFestivals")
+  festivals   Festivals[]  @relation("OrganizedFestivals")
   tickets     Tickets[]
   userLineups UserLineup[]
 }
 
 model Festivals {
   id          String   @id @default(uuid())
-  organiserId String
-  organiser   Users    @relation("OrganisedFestivals", fields: [organiserId], references: [id])
+  organizerId String
+  organizer   Users    @relation("OrganizedFestivals", fields: [organizerId], references: [id])
   name        String   @unique
   longitude   Float
   latitude    Float
