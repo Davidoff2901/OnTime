@@ -6,7 +6,7 @@ import { handleError } from "../helpers/httpError";
 export async function getAllFestivals(req: Request, res: Response) {
     try {
         const festivals = await festivalsService.findAll();
-        res.json(festivals);
+        res.status(200).json(festivals);
     } catch (err) {
         handleError(res, err);
     }
@@ -15,7 +15,7 @@ export async function getAllFestivals(req: Request, res: Response) {
 export async function getFestivalByID(req: Request, res: Response) {
     try {
         const festival = await festivalsService.findById(req.params.id);
-        res.json(festival);
+        res.status(200).json(festival);
     } catch (err) {
         handleError(res, err);
     }
@@ -23,7 +23,9 @@ export async function getFestivalByID(req: Request, res: Response) {
 
 export async function createFestival(req: Request, res: Response) {
     try {
-        const festival = await festivalsService.create(req.body);
+        const user = (req as Request & { user: { email: string } }).user;
+
+        const festival = await festivalsService.create(req.body, user.email);
         res.status(201).json(festival);
     } catch (err) {
         handleError(res, err);

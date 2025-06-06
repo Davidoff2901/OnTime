@@ -17,7 +17,7 @@ export class RegisterComponent {
     this.registerForm = this.fb.group({
       first_name: [''],
       last_name: [''],
-      email: ['', Validators.required, Validators.email],
+      email: ['', [Validators.required, Validators.email]],
       password: ['']
     });
   }
@@ -26,7 +26,7 @@ export class RegisterComponent {
       next: res => {
       },
       error: err => {
-
+        this.userService.error.set(err.error.message)
       }
     })
   }

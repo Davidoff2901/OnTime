@@ -2,6 +2,7 @@ import { Prisma } from "@prisma/client";
 import { db } from "../db/db";
 import { HttpError } from "../helpers/httpError";
 import { getByIdOrThrowError } from "../helpers/getOrThrowError";
+import { getUserIdByEmail } from "./user.service";
 
 
 export async function findAll() {
@@ -12,12 +13,19 @@ export async function findById(id: string) {
     if (!festival) throw new HttpError(404, 'Festival not found');
     return festival;
 };
-export async function create(data: { name: string, organizerId: string, latitude: number, longitude: number, start_date: Date, end_date: Date }) {
+export async function create(data: { name: string, organizerId: string, latitude: number, longitude: number, start_date: Date, end_date: Date }, email: string) {
     if (data.start_date >= data.end_date) {
         throw new HttpError(400, 'Start date must be before end date');
     }
 
     try {
+        const user = await getUserIdByEmail(email)
+        if (!user) {
+            throw new HttpError(404, 'User not found')
+        }
+
+        data.organizerId = user.id
+
         return await db.festivals.create({
             data, select: {
                 name: true,
@@ -29,6 +37,7 @@ export async function create(data: { name: string, organizerId: string, latitude
             }
         });
     } catch (error: any) {
+        console.log(error)
         if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002') {
             const target = (error.meta?.target as string[]) || [];
 
@@ -40,6 +49,10 @@ export async function create(data: { name: string, organizerId: string, latitude
             const fieldName = error.meta?.constraint || 'unknown field';
 
             throw new HttpError(400, `Cannot proceed: Missing related record for ${fieldName}.`);
+        }
+
+        if (error instanceof HttpError) {
+            throw error;
         }
 
         throw new HttpError(500, 'Failed to create festival');

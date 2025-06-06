@@ -1,5 +1,4 @@
 import { Component, inject } from '@angular/core';
-import { UserService } from '../../services/users.service';
 import { MATERIAL_FORM_IMPORTS } from '../../helpers/material-imports';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -12,7 +11,6 @@ import { AuthService } from '../../services/auth.service';
   styleUrl: './login.component.scss'
 })
 export class LoginComponent {
-  userService = inject(UserService)
   authService = inject(AuthService)
   loginForm: FormGroup;
 
@@ -30,6 +28,7 @@ export class LoginComponent {
         this.router.navigate(["/lineup"])
       },
       error: err => {
+        this.authService.error.set(err.error.message)
       }
     })
   }

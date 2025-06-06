@@ -41,7 +41,6 @@ export function authenticateJWT(req: AuthenticatedRequest, res: Response, next: 
 
 export function authorizeRoles(...allowedRoles: string[]) {
   return (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
-    console.log(req.user)
     if (!req.user || !allowedRoles.includes(req.user.role)) {
       throw new HttpError(403, 'Forbidden: Insufficient permissions')
     }
