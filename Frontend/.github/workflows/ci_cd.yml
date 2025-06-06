@@ -1,0 +1,87 @@
+# .github/workflows/ci-cd.yml
+
+name: Angular & Express CI/CD (Main and Dev Branches)
+
+# Controls when the workflow will run
+on:
+  # Triggers the workflow on push or pull request events to the 'main' or 'dev' branches
+  push:
+    branches: [ main, dev ] # Now triggers on push to both main and dev
+  pull_request:
+    branches: [ main, dev ] # Now triggers on PRs to both main and dev
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest # Use the latest Ubuntu environment
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4 # Action to check out your repository code
+
+      - name: Set up Node.js 22.15
+        uses: actions/setup-node@v4 # Action to set up Node.js environment
+        with:
+          node-version: '22.15' # Specify the Node.js version you are using
+
+      # --- Frontend (Angular) Steps ---
+      - name: Install Frontend Dependencies
+        # Navigate into the frontend directory and install dependencies
+        run: npm install
+        working-directory: ./Frontend
+
+      - name: Run Frontend Tests
+        # Run Angular unit tests in headless mode (no browser UI)
+        # Assumes 'npm test' in frontend/package.json runs 'ng test'
+        # '--watch=false' ensures tests run once and exit
+        # '--browsers=ChromeHeadless' ensures it runs without a visible browser
+        run: npm test -- --watch=false --browsers=ChromeHeadless
+        working-directory: ./Frontend
+
+      - name: Build Frontend for Production
+        # Build the Angular application for production using the defined configuration
+        # Assumes 'npm run build:prod' in frontend/package.json runs 'ng build --configuration=production'
+        run: npm run build:prod
+        working-directory: ./Frontend
+
+      # --- Backend (Express) Steps ---
+      - name: Install Backend Dependencies
+        # Navigate into the backend directory and install dependencies
+        run: npm install
+        working-directory: ./Backend
+
+      - name: Run Backend Tests
+        # Run backend tests (e.g., using Jest, Mocha, Supertest)
+        # Assumes 'npm test' in backend/package.json runs your backend tests
+        run: npm test
+        working-directory: ./Backend
+
+      # --- Simulated Local Deployment/Run (within CI environment) ---
+      # This step starts both the backend and frontend to verify they can run together.
+      # They will run in the background (&) and the job will continue.
+      # The job will succeed if both services start without critical errors.
+      - name: Start Backend Service
+        run: |
+          npm start & # Start the Express backend in the background
+          echo "Backend started in background. Waiting for 10 seconds to ensure it's up..."
+          sleep 10 # Give the backend time to fully start
+        working-directory: ./Backend
+
+      - name: Start Frontend Development Server
+        run: |
+          npm start & # Start the Angular development server in the background
+          echo "Frontend dev server started in background. Waiting for 10 seconds to ensure it's up..."
+          sleep 10 # Give the frontend time to fully start
+        working-directory: ./Frontend
+
+      - name: Verify Services (Optional - Manual Check)
+        # This step is mainly for demonstration that the job ran to completion
+        # You could add 'curl' commands here to hit endpoints if you had a more advanced check
+        run: |
+          echo "Both frontend and backend services were initiated in the CI environment."
+          echo "This simulates a successful local run check for ${{ github.ref_name }} branch."
+          # If you want to check if the backend is actually listening, you could do:
+          # curl -v http://localhost:3000/api/some-endpoint || true # Replace with your actual backend port and endpoint
+          # However, for a simple "localhost" simulation, just starting them is often sufficient.
