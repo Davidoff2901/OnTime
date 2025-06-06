@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable, signal } from '@angular/core';
-import { Festival } from '../models/festival.type';
+import { Festival } from '../models/models.type';
 import { Observable } from 'rxjs';
 
 @Injectable({

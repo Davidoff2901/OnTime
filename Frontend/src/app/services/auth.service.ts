@@ -1,6 +1,7 @@
 import { computed, inject, Injectable, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, } from 'rxjs';
+import { Router } from '@angular/router';
 
 @Injectable({
     providedIn: 'root',
@@ -8,6 +9,7 @@ import { Observable, } from 'rxjs';
 export class AuthService {
     private apiUrl = 'http://localhost:1234/api/users';
     http = inject(HttpClient)
+    router = inject(Router)
     error = signal<string | null>(null);
     _token = signal<string | null>(localStorage.getItem('token'));
 
@@ -25,6 +27,7 @@ export class AuthService {
         if (this.token()) {
             localStorage.removeItem("token")
             this._token.set(null)
+            this.router.navigate(["/"])
         }
     }
 
@@ -36,6 +39,6 @@ export class AuthService {
     loadJwt() {
         const tkn = localStorage.getItem("token")
         if (tkn) this._token.set(tkn)
-        return this.token
+        return this._token()
     }
 }

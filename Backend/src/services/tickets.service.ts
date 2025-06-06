@@ -4,7 +4,9 @@ import { getByIdOrThrowError } from "../helpers/getOrThrowError";
 
 
 export async function findAll() {
-    return await db.tickets.findMany();
+    const tickets = await db.tickets.findMany();
+    if (!tickets) throw new HttpError(404, 'No tickets found');
+    return tickets;
 };
 
 export async function findById(id: string) {

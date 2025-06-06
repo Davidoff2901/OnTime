@@ -6,12 +6,11 @@ import { comparePasswords, hashPassword } from "../helpers/hash";
 import { generateJWT } from "../helpers/jwt";
 
 export async function findAllUsers() {
-    // return await db.users.findMany({
-    //     orderBy: { first_name: 'desc' },
-    // });
     const users = await db.users.findMany({
         orderBy: { first_name: 'desc' },
     });
+    if (!users) throw new HttpError(404, 'No users found');
+
     return users.map(({ id, password, ...filtered }) => filtered)
 };
 export async function findUserById(id: string) {

@@ -6,10 +6,17 @@ import { getUserIdByEmail } from "./user.service";
 
 
 export async function findAll() {
-    return await db.festivals.findMany();
+    const festivals =  await db.festivals.findMany();
+    if (!festivals) throw new HttpError(404, 'No festivals found');
+    return festivals;
 };
 export async function findById(id: string) {
-    const festival = await db.festivals.findUnique({ where: { id } });
+    const festival = await db.festivals.findUnique({ 
+        where: { id },
+        include: {
+            stages: true
+        }
+     });
     if (!festival) throw new HttpError(404, 'Festival not found');
     return festival;
 };
@@ -37,7 +44,6 @@ export async function create(data: { name: string, organizerId: string, latitude
             }
         });
     } catch (error: any) {
-        console.log(error)
         if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002') {
             const target = (error.meta?.target as string[]) || [];
 

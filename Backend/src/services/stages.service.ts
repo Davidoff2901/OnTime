@@ -5,15 +5,36 @@ import { getByIdOrThrowError } from "../helpers/getOrThrowError";
 
 
 export async function findAll() {
-    return await db.stages.findMany();
+    const stages = await db.stages.findMany({
+        include: { festival: true },
+        orderBy: { name: "asc" }
+    });
+    if (!stages) throw new HttpError(404, 'No stages found');
+    return stages;
 };
 export async function findById(id: string) {
-    const stage = await db.stages.findUnique({ where: { id } });
+    const stage = await db.stages.findUnique({
+        where: { id },
+        include: { festival: true, performances: true }
+    });
     if (!stage) throw new HttpError(404, 'Stage not found');
     return stage;
 };
+
+export async function findStagesByFestival(festivalId: string){
+    return db.stages.findMany({
+      where: { festivalId },
+      orderBy: { name: 'asc' },
+    });
+  }
 export async function create(data: { name: string, festivalId: string, }) {
     try {
+        const festivalExists = await db.festivals.findUnique({
+            where: { id: data.festivalId },
+        });
+        if (!festivalExists) {
+            throw new HttpError(404, 'Festival not found.');
+        }
         return await db.stages.create({ data });
     } catch (error: any) {
         if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002') {

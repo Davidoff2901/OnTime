@@ -5,10 +5,15 @@ import { getByIdOrThrowError } from "../helpers/getOrThrowError";
 
 
 export async function findAll() {
-    return await db.artists.findMany();
+    const artists = await db.artists.findMany();
+    if (!artists) throw new HttpError(404, 'No artists found');
+    return artists;
 };
 export async function findById(id: string) {
-    const artist = await db.artists.findUnique({ where: { id } });
+    const artist = await db.artists.findUnique({
+        where: { id },
+        include: { performances: true }
+    });
     if (!artist) throw new HttpError(404, 'Artist not found');
     return artist;
 };

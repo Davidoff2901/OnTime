@@ -1,4 +1,4 @@
-import { Response } from "express";
+import { Request, Response, NextFunction } from 'express';
 
 export class HttpError extends Error {
   statusCode: number;
@@ -11,10 +11,17 @@ export class HttpError extends Error {
 }
 
 
-export function handleError(res: Response, err: unknown) {
-    if (err instanceof HttpError) {
-        return res.status(err.statusCode).json({ message: err.message });
-    }
-    console.error(err);
-    res.status(500).json({ message: 'Internal server error' });
+//Middleware error handling
+
+export function errorHandler(
+  err: any,
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+
+  const status = err instanceof HttpError ? err.statusCode : 500;
+  const message = err.message || 'Internal Server Error';
+
+  res.status(status).json({ status, message });
 }

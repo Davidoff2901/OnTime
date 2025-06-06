@@ -6,3 +6,7 @@ export type Festival = {
     end_date: Date
 }
 
+export type Artist = {
+    name: string
+    genre: string
+}

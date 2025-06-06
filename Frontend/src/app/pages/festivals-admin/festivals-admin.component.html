@@ -1,5 +1,5 @@
 <div>
-    <form [formGroup]="festivalForm" (ngSubmit)="onSubmit()">
+    <form [formGroup]="festivalForm" (ngSubmit)="createFestival()">
         <mat-form-field class="full-width">
             <mat-label>Name</mat-label>
             <input matInput formControlName="name" required />
@@ -52,6 +52,13 @@
             <input matInput [matTimepicker]="timepicker" formControlName="start_time" required />
             <mat-timepicker-toggle matIconSuffix [for]="timepicker"></mat-timepicker-toggle>
             <mat-timepicker #timepicker></mat-timepicker>
+            <mat-error>Choose Date</mat-error>
+        </mat-form-field>
+        <mat-form-field>
+            <mat-label>End Date</mat-label>
+            <input matInput [matTimepicker]="timepicker2" formControlName="end_time" required />
+            <mat-timepicker-toggle matIconSuffix [for]="timepicker2"></mat-timepicker-toggle>
+            <mat-timepicker interval="15m" #timepicker2></mat-timepicker>
             <mat-error>Choose Date</mat-error>
         </mat-form-field>
         <mat-form-field>

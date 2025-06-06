@@ -2,6 +2,7 @@ import { Component, inject, } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MATERIAL_FORM_IMPORTS } from '../../helpers/material-imports';
 import { FestivalsService } from '../../services/festivals.service';
+import { ArtistsService } from '../../services/artist.service';
 import { MatTimepickerModule } from '@angular/material/timepicker';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { provideNativeDateAdapter } from '@angular/material/core';
@@ -19,6 +20,7 @@ export class FestivalsAdminComponent {
   festivalForm: FormGroup;
   artistForm: FormGroup;
   festivalsService = inject(FestivalsService)
+  artistsService = inject(ArtistsService)
   festivals = this.festivalsService.festivals
 
   map!: L.Map;
@@ -33,7 +35,6 @@ export class FestivalsAdminComponent {
       longitude: ['', Validators.required],
       start_date: ['', [Validators.required]],
       end_date: ['', Validators.required],
-      // organiserId: ['18c93b9a-3e86-460b-8cf7-f972ff81d67f']
     });
     this.artistForm = this.fb.group({
       name: ['', Validators.required],
@@ -118,14 +119,26 @@ export class FestivalsAdminComponent {
   ngOnDestroy(): void {
     this.formSub?.unsubscribe();
   }
-  onSubmit(): void {
+  createFestival(): void {
     if (this.festivalForm.valid) {
       this.festivalsService.createFestival(this.festivalForm.value).subscribe({
         next: res => {
 
-        },  
+        },
         error: err => {
           this.festivalsService.error.set(err.error.message)
+        }
+      })
+    }
+  }
+  createArtist(): void {
+    if (this.artistForm.valid) {
+      this.artistsService.createArtist(this.artistForm.value).subscribe({
+        next: res => {
+
+        },
+        error: err => {
+          this.artistsService.error.set(err.error.message)
         }
       })
     }
