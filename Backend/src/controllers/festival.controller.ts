@@ -19,6 +19,15 @@ export async function getFestivalByID(req: Request, res: Response, next: NextFun
         next(err)
     }
 };
+export async function getFestivalByOrganizer(req: Request, res: Response, next: NextFunction) {
+    try {
+        const festival = await festivalsService.findByOrganizer(req.params.email);
+        res.status(200).json(festival);
+    } catch (err) {
+        next(err)
+    }
+};
+
 
 export async function createFestival(req: Request, res: Response, next:NextFunction) {
     try {

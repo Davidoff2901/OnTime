@@ -15,26 +15,16 @@ export async function getAllPerformances(req: Request, res: Response, next: Next
 export async function getPerformanceByID(req: Request, res: Response, next: NextFunction) {
     try {
         const day = new Date(req.params.day)
-        const festival = await performancesService.findById(req.params.artisId, req.params.stageId, day);
+        const festival = await performancesService.findById(req.params.id);
         res.status(200).json(festival);
     } catch (err) {
         next(err)
     }
 };
-export async function getPerformancesByStage(req: Request, res: Response, next: NextFunction) {
-    try {
-        const { stageId } = req.params;
-        const performances = await performancesService.getArtistPerformancesByStage(stageId);
-        res.status(200).json(performances);
-    } catch (err) {
-        next(err)
-    }
-}
 
-export async function getPerformancesByArtist(req: Request, res: Response, next: NextFunction) {
+export async function getPerformancesByFilter(req: Request, res: Response, next: NextFunction) {
     try {
-        const { artistId } = req.params;
-        const performances = await performancesService.getArtistPerformancesByArtist(artistId);
+        const performances = await performancesService.findAllByFilters(req.params);
         res.status(200).json(performances);
     } catch (err) {
         next(err)
@@ -62,7 +52,6 @@ export async function updatePerformance(req: Request, res: Response, next: NextF
         const day = new Date(req.params.day);
         const data = {
             ...req.body,
-            // Convert dates if provided in the update body
             start_time: req.body.start_time ? new Date(req.body.start_time) : undefined,
             end_time: req.body.end_time ? new Date(req.body.end_time) : undefined,
         };
@@ -70,7 +59,7 @@ export async function updatePerformance(req: Request, res: Response, next: NextF
         if (!data.start_date || !data.end_date) {
             throw new HttpError(400, "No valid dates")
         }
-        const festival = await performancesService.update(req.params.artisId, req.params.stageId, day, req.body);
+        const festival = await performancesService.update(req.params.id, req.body);
         res.status(200).json(festival);
     } catch (err) {
         next(err)
@@ -78,8 +67,7 @@ export async function updatePerformance(req: Request, res: Response, next: NextF
 };
 export async function deletePerformance(req: Request, res: Response, next: NextFunction) {
     try {
-        const day = new Date(req.params.day);
-        await performancesService.deleteItem(req.params.artisId, req.params.stageId, day);
+        await performancesService.deleteItem(req.params.id);
         res.status(204).send();
     } catch (err) {
         next(err)

@@ -29,7 +29,7 @@ app.use('/api/festivals', festivalRoutes)
 app.use('/api/stages', stagesRoutes)
 app.use('/api/tickets', ticketsRoutes)
 app.use('/api/userlineups', lineupRoutes)
-app.use('/api/performance', performanceRoutes)
+app.use('/api/performances', performanceRoutes)
 
 app.use(errorHandler)
 

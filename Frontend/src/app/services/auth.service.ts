@@ -2,6 +2,7 @@ import { computed, inject, Injectable, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, } from 'rxjs';
 import { Router } from '@angular/router';
+import { jwtDecode } from 'jwt-decode';
 
 @Injectable({
     providedIn: 'root',
@@ -40,5 +41,13 @@ export class AuthService {
         const tkn = localStorage.getItem("token")
         if (tkn) this._token.set(tkn)
         return this._token()
+    }
+
+    getEmail() {
+        const tkn = localStorage.getItem("token")
+        if (!tkn) {
+            return
+        }
+        return jwtDecode<{ exp: number, iat: number, filtered: { email: string } }>(tkn).filtered.email
     }
 }

@@ -1,26 +1,26 @@
-import { Component, inject, } from '@angular/core';
+import { Component, inject, OnInit, } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MATERIAL_FORM_IMPORTS } from '../../helpers/material-imports';
 import { FestivalsService } from '../../services/festivals.service';
-import { ArtistsService } from '../../services/artist.service';
-import { MatTimepickerModule } from '@angular/material/timepicker';
 import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatSelectModule } from '@angular/material/select';
 import { provideNativeDateAdapter } from '@angular/material/core';
 import * as L from 'leaflet';
 import { debounceTime, distinctUntilChanged, Subscription } from 'rxjs';
+import { StagesService } from '../../services/stage.service';
 
 @Component({
   selector: 'app-festivals-admin',
-  imports: [MATERIAL_FORM_IMPORTS, MatTimepickerModule, MatDatepickerModule, ReactiveFormsModule],
+  imports: [MATERIAL_FORM_IMPORTS, MatDatepickerModule, ReactiveFormsModule, MatSelectModule],
   providers: [provideNativeDateAdapter()],
   templateUrl: './festivals-admin.component.html',
   styleUrl: './festivals-admin.component.scss'
 })
-export class FestivalsAdminComponent {
-  festivalForm: FormGroup;
-  artistForm: FormGroup;
+export class FestivalsAdminComponent implements OnInit {
+  festivalForm!: FormGroup;
+  stageForm!: FormGroup;
   festivalsService = inject(FestivalsService)
-  artistsService = inject(ArtistsService)
+  stagesService = inject(StagesService)
   festivals = this.festivalsService.festivals
 
   map!: L.Map;
@@ -29,6 +29,9 @@ export class FestivalsAdminComponent {
   formSub!: Subscription;
 
   constructor(private fb: FormBuilder) {
+  }
+
+  ngOnInit(): void {
     this.festivalForm = this.fb.group({
       name: ['', Validators.required],
       latitude: ['', Validators.required],
@@ -36,10 +39,9 @@ export class FestivalsAdminComponent {
       start_date: ['', [Validators.required]],
       end_date: ['', Validators.required],
     });
-    this.artistForm = this.fb.group({
+    this.stageForm = this.fb.group({
       name: ['', Validators.required],
-      start_time: ['', Validators.required],
-      end_time: ['', Validators.required],
+      festivalId: ['', Validators.required]
     })
 
     this.festivalsService.getFestivals().subscribe({
@@ -58,7 +60,7 @@ export class FestivalsAdminComponent {
   }
 
   initMap(): void {
-    this.map = L.map('map').setView([51.505, -0.09], 13);
+    this.map = L.map('map').setView([42.70, 23.32], 13);
 
     L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
       maxZoom: 19,
@@ -131,14 +133,15 @@ export class FestivalsAdminComponent {
       })
     }
   }
-  createArtist(): void {
-    if (this.artistForm.valid) {
-      this.artistsService.createArtist(this.artistForm.value).subscribe({
+  
+  createStage(): void {
+    if (this.stageForm.valid) {
+      this.stagesService.createStage(this.stageForm.value).subscribe({
         next: res => {
 
         },
         error: err => {
-          this.artistsService.error.set(err.error.message)
+          this.stagesService.error.set(err.error.message)
         }
       })
     }

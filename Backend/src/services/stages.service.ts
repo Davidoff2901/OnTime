@@ -4,11 +4,10 @@ import { HttpError } from "../helpers/httpError";
 import { getByIdOrThrowError } from "../helpers/getOrThrowError";
 
 
-export async function findAll() {
-    const stages = await db.stages.findMany({
-        include: { festival: true },
-        orderBy: { name: "asc" }
-    });
+export async function findStagesByFestival(festivalId: string) {
+    const where = festivalId ? { festivalId } : {};
+    const stages = db.stages.findMany({ where, include: { festival: true } });
+
     if (!stages) throw new HttpError(404, 'No stages found');
     return stages;
 };
@@ -21,12 +20,12 @@ export async function findById(id: string) {
     return stage;
 };
 
-export async function findStagesByFestival(festivalId: string){
-    return db.stages.findMany({
-      where: { festivalId },
-      orderBy: { name: 'asc' },
-    });
-  }
+// export async function findStagesByFestival(festivalId: string) {
+//     return db.stages.findMany({
+//         where: { festivalId },
+//         orderBy: { name: 'asc' },
+//     });
+// }
 export async function create(data: { name: string, festivalId: string, }) {
     try {
         const festivalExists = await db.festivals.findUnique({
@@ -70,6 +69,7 @@ export async function deleteItem(id: string) {
     await getByIdOrThrowError('stages', id, "Stage not found")
 
     try {
+        await db.artistPerformance.deleteMany({ where: { stageId: id } });
         return await db.stages.delete({ where: { id } });
     } catch {
         throw new HttpError(500, 'Failed to delete stage');

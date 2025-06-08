@@ -2,9 +2,9 @@ import { NextFunction, Request, Response } from "express";
 import * as stageService from '../services/stages.service'
 
 
-export async function getAllStages(req: Request, res: Response, next: NextFunction) {
+export async function getAllStagesByFestival(req: Request, res: Response, next: NextFunction) {
     try {
-        const stages = await stageService.findAll();
+        const stages = await stageService.findStagesByFestival(req.params.festivalId);
         res.json(stages);
     } catch (err) {
         next(err)
@@ -19,14 +19,6 @@ export async function getStageById(req: Request, res: Response, next: NextFuncti
         next(err)
     }
 };
-export async function getStagesByFestival(req: Request, res: Response, next: NextFunction) {
-    try {
-        const stages = await stageService.findStagesByFestival(req.params.id);
-        res.status(200).json(stages);
-    } catch (err) {
-        next(err)
-    }
-}
 
 export async function createStage(req: Request, res: Response, next: NextFunction) {
     try {

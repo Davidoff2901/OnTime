@@ -12,7 +12,7 @@ export async function findAll() {
 export async function findById(id: string) {
     const artist = await db.artists.findUnique({
         where: { id },
-        include: { performances: true }
+        include: { performances: { include: { festival: true, stage: true } } }
     });
     if (!artist) throw new HttpError(404, 'Artist not found');
     return artist;
@@ -53,6 +53,7 @@ export async function update(id: string, data: { name?: string, genre?: string }
 export async function deleteItem(id: string) {
     await getByIdOrThrowError('artists', id, "Artist not found")
     try {
+        await db.artistPerformance.deleteMany({ where: { artistId: id } }); 
         return await db.artists.delete({ where: { id } });
     } catch {
         throw new HttpError(500, 'Failed to delete artist');

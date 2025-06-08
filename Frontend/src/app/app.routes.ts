@@ -6,6 +6,7 @@ import { RegisterComponent } from './pages/register/register.component';
 import { LoginComponent } from './pages/login/login.component';
 import { MissingPageComponent } from './pages/missing-page/missing-page.component';
 import { authGuard } from './guards/auth.guard';
+import { ArtistsAdminComponent } from './pages/artists-admin/artists-admin.component';
 
 export const routes: Routes = [{
     path: "",
@@ -24,11 +25,12 @@ export const routes: Routes = [{
     canActivate: [authGuard],
     component: FestivalsAdminComponent,
 },
-// {
-//     path: "admin",
-//     pathMatch: 'full',
-//     // component: FestivalsAdminComponent
-// },
+{
+    path: "artists-admin",
+    pathMatch: 'full',
+    canActivate: [authGuard],
+    component: ArtistsAdminComponent,
+},
 {
     path: "register",
     pathMatch: 'full',

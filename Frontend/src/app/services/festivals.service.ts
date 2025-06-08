@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Injectable, signal } from '@angular/core';
 import { Festival } from '../models/models.type';
 import { Observable } from 'rxjs';
@@ -10,7 +10,7 @@ export class FestivalsService {
   http = inject(HttpClient)
   private apiUrl = 'http://localhost:1234/api/festivals';
 
-  festivals = signal<Festival[] | null>(null);
+  festivals = signal<Festival[]>([]);
   error = signal<string | null>(null);
 
   constructor() { }
@@ -21,5 +21,8 @@ export class FestivalsService {
 
   createFestival(festival: Festival): Observable<Festival> {
     return this.http.post<Festival>(this.apiUrl, festival)
+  }
+  getFestivalsByOrganizer(organizerEmail: string): Observable<Festival[]> {
+    return this.http.get<Festival[]>(`${this.apiUrl}/by-organizer/${organizerEmail} `)
   }
 }

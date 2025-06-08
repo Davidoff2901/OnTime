@@ -41,32 +41,25 @@
     </form>
 
 
-    <form [formGroup]="artistForm">
+    <form [formGroup]="stageForm" (ngSubmit)="createStage()">
         <mat-form-field class="full-width">
             <mat-label>Name</mat-label>
             <input matInput formControlName="name" required />
             <mat-error>Name is required</mat-error>
         </mat-form-field>
         <mat-form-field>
-            <mat-label>Start Date</mat-label>
-            <input matInput [matTimepicker]="timepicker" formControlName="start_time" required />
-            <mat-timepicker-toggle matIconSuffix [for]="timepicker"></mat-timepicker-toggle>
-            <mat-timepicker #timepicker></mat-timepicker>
-            <mat-error>Choose Date</mat-error>
+            <mat-label>Festival</mat-label>
+            <mat-select formControlName="festivalId">
+                @for (festival of festivals(); track festival) {
+                <mat-option [value]="festival.id">{{festival.name}} </mat-option>
+                }
+            </mat-select>
         </mat-form-field>
-        <mat-form-field>
-            <mat-label>End Date</mat-label>
-            <input matInput [matTimepicker]="timepicker2" formControlName="end_time" required />
-            <mat-timepicker-toggle matIconSuffix [for]="timepicker2"></mat-timepicker-toggle>
-            <mat-timepicker interval="15m" #timepicker2></mat-timepicker>
-            <mat-error>Choose Date</mat-error>
-        </mat-form-field>
-        <mat-form-field>
-            <mat-label>End Date</mat-label>
-            <input matInput [matTimepicker]="timepicker2" formControlName="end_time" required />
-            <mat-timepicker-toggle matIconSuffix [for]="timepicker2"></mat-timepicker-toggle>
-            <mat-timepicker interval="15m" #timepicker2></mat-timepicker>
-            <mat-error>Choose Date</mat-error>
-        </mat-form-field>
+        <button mat-raised-button color="primary" type="submit" [disabled]="stageForm.invalid">
+            Create Stage
+        </button>
+        <div>{{this.stagesService.error()}}</div>
+
     </form>
+    
 </div>

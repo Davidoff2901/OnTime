@@ -51,11 +51,12 @@ model Festivals {
   stages      Stages[]
   tickets     Tickets[]
   userLineups UserLineup[]
+  performances ArtistPerformance[]
 }
 
 model Stages {
   id         String    @id @default(uuid())
-  festivalId String
+  festivalId String    
   festival   Festivals @relation(fields: [festivalId], references: [id])
   name       String    @unique
   created_at DateTime  @default(now())
@@ -65,16 +66,20 @@ model Stages {
 }
 
 model ArtistPerformance {
+  id         String    @id @default(uuid())
   artistId   String
-  artist     Artists  @relation(fields: [artistId], references: [id])
+  artist     Artists   @relation(fields: [artistId], references: [id])
   stageId    String
-  stage      Stages   @relation(fields: [stageId], references: [id])
-  created_at DateTime @default(now())
+  stage      Stages    @relation(fields: [stageId], references: [id])
+  festivalId String
+  festival   Festivals @relation(fields: [festivalId], references: [id])
+  created_at DateTime  @default(now())
   day        DateTime
   start_time DateTime
   end_time   DateTime
 
-  @@id([artistId, stageId, day]) // Composite primary key
+  @@unique([stageId, day, start_time, end_time], name: "unique_stage_performance_slot")
+  @@unique([artistId, festivalId, stageId, day, start_time, end_time], name: "unique_artist_performance_slot")
 }
 
 model Artists {
