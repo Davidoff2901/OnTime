@@ -6,6 +6,7 @@ export type Festival = {
     start_date: Date
     end_date: Date
     stages?: Stage[]
+    performances?: Performances[]
 }
 
 export type Stage = {
@@ -29,6 +30,37 @@ export type Performances = {
     end_time: Date
 }
 
+export type TicketDTO = {
+    festivalId: string,
+    email: string
+}
+export type Ticket = {
+    id?: string,
+    festivalId?: string,
+    purchased?: Date
+    email?: string,
+    festival?: { name: string, start_date: Date, end_date: Date }
+}
+
+export type Lineup = {
+    festival: {
+        end_date: Date,
+        start_date: Date,
+        name: string,
+        performances: {
+            day: Date,
+            artist: {
+                name: string,
+                genre: string
+            }
+            stage: {
+                name: string
+            }
+        }
+
+    }
+}
+
 export const musicGenres: { name: string, subgenres: string[] }[] = [
     {
         name: "Rock",
@@ -40,9 +72,21 @@ export const musicGenres: { name: string, subgenres: string[] }[] = [
             "Punk Rock",
             "Progressive Rock",
             "Grunge",
-            "Metal",
             "Folk Rock",
             "Psychedelic Rock",
+        ],
+    },
+    {
+        name: "Metal",
+        subgenres: [
+            "Progressive Rock",
+            "Death Metal",
+            "Nu-Metal",
+            "Symphonic Metal",
+            "Thrash Metal",
+            "Groove Metal",
+            "Gothic Metal",
+            "Industrial Metal",
         ],
     },
     {

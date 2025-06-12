@@ -12,10 +12,8 @@ import { AuthService } from '../../services/auth.service';
 })
 export class HeaderComponent {
   authService = inject(AuthService)
-  hasToken: Signal<boolean>;
 
-  constructor( private router: Router) {
-    this.hasToken = computed(() => !!this.authService.token());
+  constructor(private router: Router) {
   }
   logout() {
     this.authService.logoutUser()

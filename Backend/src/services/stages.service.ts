@@ -20,12 +20,6 @@ export async function findById(id: string) {
     return stage;
 };
 
-// export async function findStagesByFestival(festivalId: string) {
-//     return db.stages.findMany({
-//         where: { festivalId },
-//         orderBy: { name: 'asc' },
-//     });
-// }
 export async function create(data: { name: string, festivalId: string, }) {
     try {
         const festivalExists = await db.festivals.findUnique({

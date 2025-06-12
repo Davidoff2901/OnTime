@@ -7,7 +7,7 @@ export async function findById(id: string) {
     if (!lineup) throw new HttpError(404, 'Lineup not found');
     return lineup;
 };
-export async function create(data: { userId: string, festivalId: string }) {
+export async function create(data: { userId: string, festivalId: string, artistPerformanceId: string }) {
     try {
         return await db.userLineup.create({ data });
     } catch (error: any) {

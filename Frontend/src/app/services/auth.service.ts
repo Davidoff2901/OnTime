@@ -18,6 +18,7 @@ export class AuthService {
     readonly isLoggedIn = computed(() => !!this._token());
 
     constructor() {
+        this.loadJwt() 
     }
 
     loginUser(data: { identifier: string; password: string }): Observable<{ data: string }> {
@@ -39,15 +40,42 @@ export class AuthService {
 
     loadJwt() {
         const tkn = localStorage.getItem("token")
-        if (tkn) this._token.set(tkn)
-        return this._token()
+        if (tkn) {
+            this._token.set(tkn);
+        } else {
+            this._token.set(null);
+        }
+        return this._token();
     }
 
     getEmail() {
-        const tkn = localStorage.getItem("token")
+        const tkn = this.token()
         if (!tkn) {
             return
         }
         return jwtDecode<{ exp: number, iat: number, filtered: { email: string } }>(tkn).filtered.email
+    }
+    getRole() {
+        const tkn = this.token()
+        if (!tkn) {
+            return false
+        }
+        return jwtDecode<{ exp: number, iat: number, filtered: { role: string } }>(tkn).filtered.role
+    }
+    isTokenExpired(): boolean {
+        const currentToken = this.token();
+
+        if (!currentToken) {
+            return true;
+        }
+
+        try {
+            const decoded: { exp: number } = jwtDecode(currentToken);
+            const currentTime = Math.floor(Date.now() / 1000);
+            return decoded.exp < currentTime;
+        } catch (error) {
+            console.error("Error decoding token for expiry check:", error);
+            return true;
+        }
     }
 }

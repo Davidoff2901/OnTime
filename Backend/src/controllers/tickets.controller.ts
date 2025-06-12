@@ -18,23 +18,24 @@ export async function getTicketById(req: Request, res: Response, next: NextFunct
     }
 };
 
-export async function createTicket(req: Request, res: Response, next: NextFunction) {
+export async function getFestivalsByTicket(req: Request, res: Response, next: NextFunction) {
     try {
-        const ticket = await ticketsService.create(req.body);
-        res.status(201).json(ticket);
+        const ticket = await ticketsService.findFestivalsByTicket(req.params.email);
+        res.json(ticket);
     } catch (err) {
         next(err)
     }
 };
 
-// export async function updateTicket(req: Request, res: Response) {
-//     try {
-//            const stage = await ticketsService.update(req.params.id, req.body);
-//            res.json(stage);
-//        } catch (err) {
-//            handleError(res, err);
-//        }
-// };
+
+export async function purchaseTicket(req: Request, res: Response, next: NextFunction) {
+    try {
+        const stage = await ticketsService.create( req.body);
+        res.json(stage);
+    } catch (err) {
+        next(err)
+    }
+};
 export async function deleteTicket(req: Request, res: Response, next: NextFunction) {
     try {
         await ticketsService.deleteItem(req.params.id);

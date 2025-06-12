@@ -10,15 +10,14 @@ export async function findAll() {
             stage: { select: { id: true, name: true } },
             festival: { select: { id: true, name: true, start_date: true, end_date: true } }
         },
-
     });
     if (!artists) throw new HttpError(404, 'No performances found');
     return artists;
 };
-export async function findAllByFilters(filters?: { festivalId?: string; stageId?: string; artistId?: string }) {
+export async function findAllByFilters(filters?: { festivalId?: string; stageId?: string; }) {
     const artists = await db.artistPerformance.findMany({
         where: filters,
-        include: { artist: true, stage: { include: { festival: true } } },
+        include: { artist: true, stage: true, festival: { select: { name: true, start_date: true, end_date: true } } },
         orderBy: { day: 'asc', start_time: 'asc' },
     });
     if (!artists) throw new HttpError(404, 'No performances found');

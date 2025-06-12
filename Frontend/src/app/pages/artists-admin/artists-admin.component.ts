@@ -36,6 +36,7 @@ export class ArtistsAdminComponent implements OnInit {
   selectedFestivalId = signal<string | null>(null);
   selectedStageId = signal<string | null>(null);
   selectedDate = signal<Date | null>(null);
+  pickerStartAt = signal<Date | null>(null);
 
   selectedFestival = computed(() => {
     const festivalId = this.selectedFestivalId();
@@ -76,7 +77,6 @@ export class ArtistsAdminComponent implements OnInit {
         this.artistsService.artists.set(res)
       },
       error: err => {
-        console.log(err)
         this.artistsService.error.set(err)
       }
     })
@@ -90,11 +90,7 @@ export class ArtistsAdminComponent implements OnInit {
         this.festivalsService.festivals.set(processed)
 
       },
-      error: err => {
-
-      }
     })
-
   }
 
   onMainGenreChange(event: MatSelectChange): void {
@@ -114,6 +110,9 @@ export class ArtistsAdminComponent implements OnInit {
     }
   }
   onFestivalIdChange(festivalId: string | null): void {
+    const selectedFestival = this.festivalsService.festivals().find(f => f.id === festivalId);
+    this.pickerStartAt.set(selectedFestival!.start_date);
+
     this.selectedFestivalId.set(festivalId);
     this.selectedStageId.set(null);
     this.selectedDate.set(null)
@@ -136,7 +135,6 @@ export class ArtistsAdminComponent implements OnInit {
     if (!festival) {
       return false;
     }
-    console.log(festival)
     const festivalStart = new Date(festival.start_date.getFullYear(), festival.start_date.getMonth(), festival.start_date.getDate());
     const festivalEnd = new Date(festival.end_date.getFullYear(), festival.end_date.getMonth(), festival.end_date.getDate());
     const currentDay = new Date(day.getFullYear(), day.getMonth(), day.getDate());

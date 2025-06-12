@@ -14,7 +14,6 @@ export async function getAllPerformances(req: Request, res: Response, next: Next
 
 export async function getPerformanceByID(req: Request, res: Response, next: NextFunction) {
     try {
-        const day = new Date(req.params.day)
         const festival = await performancesService.findById(req.params.id);
         res.status(200).json(festival);
     } catch (err) {

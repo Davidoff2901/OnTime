@@ -1,0 +1,23 @@
+<div>
+    <div>{{this.ticketsService.error()}}</div>
+
+    <div class="grid grid-cols-3 justify-items-center">
+        @for (item of festivalsService.festivals(); track $index) {
+        <mat-card class="w-[80%] items-center ">
+            <mat-card-header>
+                <div mat-card-avatar class="example-header-image"></div>
+                <mat-card-title>{{item.name}}</mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
+                <div>{{item.start_date | date: 'd MMMM ' }} - {{item.end_date | date: 'd MMMM y'
+                    }}</div>
+            </mat-card-content>
+            <mat-card-actions>
+                <button mat-raised-button color="primary" (click)="purchase(item.id)">
+                    Purchase
+                </button>
+            </mat-card-actions>
+        </mat-card>
+        }
+    </div>
+</div>

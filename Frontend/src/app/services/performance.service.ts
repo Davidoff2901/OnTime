@@ -18,4 +18,8 @@ export class PerformancesService {
   createPerformance(stage: Performances): Observable<Performances> {
     return this.http.post<Performances>(this.apiUrl, stage)
   }
+
+  getPerformancesByFilter(filter: string): Observable<Performances[]> {
+    return this.http.get<Performances[]>(`${this.apiUrl}/${filter}`)
+  }
 }

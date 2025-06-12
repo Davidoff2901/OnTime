@@ -1,1 +1,52 @@
-<p>line-up works!</p>
+<div>
+    <!-- <div class="grid grid-cols-3 justify-items-center">
+        @for (item of festivals(); track $index) {
+        <mat-card class="w-[80%] items-center ">
+            <mat-card-header>
+                <div mat-card-avatar class="example-header-image"></div>
+                <mat-card-title>{{item.festival.name}}</mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
+                <div>{{item.festival.start_date| date: 'd MMMM ' }} - {{item.festival.end_date| date: 'd MMMM y'}}</div>
+            </mat-card-content>
+            <mat-card-actions>
+                <button mat-raised-button color="primary">
+                    Open
+                </button>
+            </mat-card-actions>
+        </mat-card>
+        }
+    </div> -->
+
+    @if (festivals().length === 0) {
+    <div>
+        You have no tickets bought.
+        Click <a class="font-bold" [routerLink]="['/tickets']">here</a> to go buy tickets!
+    </div>
+    }
+
+    <mat-accordion>
+        @for (item of festivals(); track $index) {
+        <mat-expansion-panel>
+            <mat-expansion-panel-header>
+                <mat-panel-title>
+                    {{item.festival.name}} | {{item.festival.start_date | date: 'd MMMM ' }} -
+                    {{item.festival.end_date | date: 'd MMMM y' }}
+                </mat-panel-title>
+            </mat-expansion-panel-header>
+            <div class="grid grid-cols-2">
+                @for (item of item.festival.performances; track $index) {
+                <mat-card>
+                    <mat-card-header>
+                        {{item.artist.name}}
+                    </mat-card-header>
+                    <mat-card-content>
+
+                    </mat-card-content>
+                </mat-card>
+                }
+            </div>
+        </mat-expansion-panel>
+        }
+    </mat-accordion>
+</div>

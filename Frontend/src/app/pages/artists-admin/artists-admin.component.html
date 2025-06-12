@@ -58,9 +58,6 @@
         <mat-form-field appearance="fill">
             <mat-label>Festival</mat-label>
             <mat-select [value]="selectedFestivalId()" (selectionChange)="onFestivalIdChange($event.value)">
-                <!-- <mat-option *ngFor="let subgenre of selectedSubgenres" [value]="subgenre">
-                    {{ subgenre }}
-                </mat-option> -->
                 @for (festival of festivalsService.festivals(); track festivalsService.festivals()) {
                 <mat-option [value]="festival.id">{{festival.name}} </mat-option>
                 }
@@ -73,9 +70,6 @@
             <mat-label>Stage</mat-label>
             <mat-select formControlName="stageId" [value]="selectedStageId()"
                 (selectionChange)="onStageIdChange($event.value)">
-                <!-- <mat-option *ngFor="let subgenre of selectedSubgenres" [value]="subgenre">
-                    {{ subgenre }}
-                </mat-option> -->
                 @for (stage of selectedFestival()?.stages; track selectedFestival()!) {
                 <mat-option [value]="stage.id">{{stage.name}} </mat-option>
                 }
@@ -87,9 +81,10 @@
         <mat-form-field appearance="fill">
             <mat-label>Choose a date</mat-label>
             <input matInput [matDatepicker]="picker" [matDatepickerFilter]="festivalDateFilter" [value]="selectedDate()"
-                (dateChange)="onDateChange($event.value)" formControlName="day"> <mat-hint>Date must be within festival dates</mat-hint>
+                (dateChange)="onDateChange($event.value)" formControlName="day"> <mat-hint>Date must be within festival
+                dates</mat-hint>
             <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
-            <mat-datepicker #picker></mat-datepicker>
+            <mat-datepicker #picker [startAt]="pickerStartAt()"></mat-datepicker>
         </mat-form-field>
         <mat-form-field>
             <mat-label>Start Time</mat-label>

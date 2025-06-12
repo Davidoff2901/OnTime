@@ -45,13 +45,11 @@ export async function createUser(data: { first_name: string, last_name: string, 
             const target = (error.meta?.target as string[]) || [];
 
             if (target.includes('email')) {
-                throw new HttpError(409, 'Email already exists');
+                throw new HttpError(409, 'Email already used');
             } else if (target.includes('phone')) {
-                throw new HttpError(409, 'Phone number already exists');
+                throw new HttpError(409, 'Phone number already used');
             }
-            // else {
-            //     throw new HttpError(409, 'A unique constraint was violated');
-            // }
+
         }
 
         throw new HttpError(500, 'Failed to create user');

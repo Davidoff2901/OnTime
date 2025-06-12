@@ -28,7 +28,7 @@ app.use('/api/artists', artistRoutes)
 app.use('/api/festivals', festivalRoutes)
 app.use('/api/stages', stagesRoutes)
 app.use('/api/tickets', ticketsRoutes)
-app.use('/api/userlineups', lineupRoutes)
+app.use('/api/user-lineup', lineupRoutes)
 app.use('/api/performances', performanceRoutes)
 
 app.use(errorHandler)
