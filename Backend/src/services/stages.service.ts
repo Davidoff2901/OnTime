@@ -28,7 +28,16 @@ export async function create(data: { name: string, festivalId: string, }) {
         if (!festivalExists) {
             throw new HttpError(404, 'Festival not found.');
         }
-        return await db.stages.create({ data });
+        return await db.stages.create({
+            data: {
+                festival: {
+                    connect: {
+                        id: data.festivalId
+                    }
+                },
+                name: data.name
+            }
+        });
     } catch (error: any) {
         if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002') {
             const target = (error.meta?.target as string[]) || [];

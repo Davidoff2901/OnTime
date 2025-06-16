@@ -1,7 +1,7 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Injectable, signal } from '@angular/core';
 import { Festival } from '../models/models.type';
-import { Observable } from 'rxjs';
+import { map, Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -18,11 +18,13 @@ export class FestivalsService {
   getFestivals(): Observable<Festival[]> {
     return this.http.get<Festival[]>(this.apiUrl)
   }
-
+  getFestivalsByOrganizer(organizerEmail: string): Observable<Festival[]> {
+    return this.http.get<Festival[]>(`${this.apiUrl}/by-organizer/${organizerEmail} `)
+  }
   createFestival(festival: Festival): Observable<Festival> {
     return this.http.post<Festival>(this.apiUrl, festival)
   }
-  getFestivalsByOrganizer(organizerEmail: string): Observable<Festival[]> {
-    return this.http.get<Festival[]>(`${this.apiUrl}/by-organizer/${organizerEmail} `)
+  updateFestival(festival: Festival): Observable<Festival> {
+    return this.http.put<Festival>(`${this.apiUrl}/${festival.id}`, festival)
   }
 }

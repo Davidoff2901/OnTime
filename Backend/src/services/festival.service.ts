@@ -7,7 +7,7 @@ import { getUserIdByEmail } from "./user.service";
 
 export async function findAll() {
     const festivals = await db.festivals.findMany({
-        select: { id: true, name: true, start_date: true, end_date: true, latitude: true, longitude: true, stages: true },
+        select: { id: true, name: true, start_date: true, end_date: true, latitude: true, longitude: true, address: true, stages: true },
     });
     if (!festivals) throw new HttpError(404, 'No festivals found');
     return festivals;
@@ -44,6 +44,7 @@ export async function findByOrganizer(organizerEmail: string) {
             end_date: true,
             latitude: true,
             longitude: true,
+            address: true,
             stages: true,
             performances: {
                 include: {
@@ -64,7 +65,7 @@ export async function findByOrganizer(organizerEmail: string) {
 //         where: {userId: userId?.id}
 //     })
 // }
-export async function create(data: { name: string, organizerId: string, latitude: number, longitude: number, start_date: Date, end_date: Date }, email: string) {
+export async function create(data: { name: string, organizerId: string, latitude: number, longitude: number, address: string, start_date: Date, end_date: Date }, email: string) {
     if (data.start_date >= data.end_date) {
         throw new HttpError(400, 'Start date must be before end date');
     }
@@ -86,6 +87,7 @@ export async function create(data: { name: string, organizerId: string, latitude
                 end_date: true,
                 latitude: true,
                 longitude: true,
+                address: true
             }
         });
     } catch (error: any) {

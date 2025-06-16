@@ -1,171 +1,139 @@
-import { Component, computed, inject, OnInit, signal, Signal } from '@angular/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { ArtistsService } from '../../services/artist.service';
 import { MATERIAL_FORM_IMPORTS } from '../../helpers/material-imports';
-import { MatSelectChange } from '@angular/material/select';
-import { MatSelectModule } from '@angular/material/select';
-import { Festival, musicGenres, Stage } from '../../models/models.type';
-import { MatTimepickerModule } from '@angular/material/timepicker';
-import { provideNativeDateAdapter } from '@angular/material/core';
+import { Artist, musicGenres, Stage } from '../../models/models.type';
 import { PerformancesService } from '../../services/performance.service';
 import { StagesService } from '../../services/stage.service';
 import { FestivalsService } from '../../services/festivals.service';
 import { AuthService } from '../../services/auth.service';
-import { MatDatepickerModule } from '@angular/material/datepicker';
-
+import { MatIconModule } from '@angular/material/icon';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatDialog } from '@angular/material/dialog';
+import { ArtistDialogComponent } from '../../components/artist-dialog/artist-dialog.component';
+import { MatCardModule } from '@angular/material/card';
+import { CommonModule } from '@angular/common';
+import { MatSelectModule } from '@angular/material/select';
 @Component({
   selector: 'app-artists-admin',
-  imports: [MATERIAL_FORM_IMPORTS, ReactiveFormsModule, MatDatepickerModule, MatSelectModule, MatTimepickerModule],
+  imports: [MATERIAL_FORM_IMPORTS, MatCardModule, MatIconModule, CommonModule, MatSelectModule],
   templateUrl: './artists-admin.component.html',
-  providers: [provideNativeDateAdapter()],
   styleUrl: './artists-admin.component.scss'
 })
 export class ArtistsAdminComponent implements OnInit {
-  artistForm!: FormGroup;
-  performanceForm!: FormGroup
   stagesService = inject(StagesService)
   artistsService = inject(ArtistsService)
   performanceService = inject(PerformancesService)
   festivalsService = inject(FestivalsService)
   authService = inject(AuthService)
-  fb = inject(FormBuilder)
+  snackBar = inject(MatSnackBar)
+  private dialog = inject(MatDialog);
 
   musicGenres = musicGenres
-  stages = signal<Stage[] | null>(null);
 
-  selectedFestivalId = signal<string | null>(null);
-  selectedStageId = signal<string | null>(null);
-  selectedDate = signal<Date | null>(null);
-  pickerStartAt = signal<Date | null>(null);
+  searchName = signal<string>('');
+  selectedGenre = signal<string>('All');
+  selectedSubgenre = signal<string>('All');
 
-  selectedFestival = computed(() => {
-    const festivalId = this.selectedFestivalId();
-    if (festivalId === null) {
-      return null;
-    }
-    return this.festivalsService.festivals().find(f => f.id === festivalId) || null;
+  uniqueGenres = computed(() => {
+    const genres = new Set<string>();
+    this.artistsService.artists().forEach(artist => genres.add(artist.genre));
+    return Array.from(genres).sort();
   });
 
-  selectedStage = computed(() => {
-    const stageId = this.selectedStageId();
-    const festival = this.selectedFestival();
-    if (stageId === null || !festival) {
-      return null;
-    }
-    return festival.stages?.find(s => s.id === stageId) || null;
+  uniqueSubgenres = computed(() => {
+    const subgenres = new Set<string>();
+    const currentGenre = this.selectedGenre();
+    this.artistsService.artists().forEach(artist => {
+      if (currentGenre === 'All' || artist.genre === currentGenre) {
+        subgenres.add(artist.subgenre);
+      }
+    });
+    return Array.from(subgenres).sort();
   });
+  filteredArtists = computed(() => {
+    const term = this.searchName().toLowerCase();
+    const genre = this.selectedGenre();
+    const subgenre = this.selectedSubgenre();
 
-  selectedMainGenreName: string = '';
-  selectedSubgenres: string[] = [];
+    return this.artistsService.artists().filter(artist => {
+      const matchesName = artist.name.toLowerCase().includes(term);
+      const matchesGenre = genre === 'All' || artist.genre === genre;
+      const matchesSubgenre = subgenre === 'All' || artist.subgenre === subgenre;
+
+      return matchesName && matchesGenre && matchesSubgenre;
+    });
+  });
 
   ngOnInit(): void {
-    this.artistForm = this.fb.group({
-      name: ['', Validators.required],
-      genre: [{ value: '', disabled: true }, Validators.required],
-    });
-    this.performanceForm = this.fb.group({
-      artistId: ['', Validators.required],
-      festivalId: ['', Validators.required],
-      stageId: [{ value: '', disabled: true }, Validators.required],
-      day: [{ value: '', disabled: true }, Validators.required],
-      start_time: ['', Validators.required],
-      end_time: ['', Validators.required]
-    });
-
+    this.loadArtists()
+    
+  }
+  loadArtists() {
     this.artistsService.getArtists().subscribe({
       next: res => {
         this.artistsService.artists.set(res)
       },
       error: err => {
-        this.artistsService.error.set(err)
+        this.snackBar.open(err.error.message, 'Dismiss', { duration: 3000 });
       }
     })
-    this.festivalsService.getFestivalsByOrganizer(this.authService.getEmail()!).subscribe({
-      next: res => {
-        const processed: Festival[] = res.map(item => ({
-          ...item,
-          start_date: new Date(item.start_date),
-          end_date: new Date(item.end_date)
-        }))
-        this.festivalsService.festivals.set(processed)
-
-      },
-    })
   }
 
-  onMainGenreChange(event: MatSelectChange): void {
-    const selectedGenreName = event.value;
-    this.selectedMainGenreName = selectedGenreName; // Update the variable for display logic
-
-    const selectedGenre = musicGenres.find((genre) => genre.name === selectedGenreName);
-
-    if (selectedGenre) {
-      this.selectedSubgenres = selectedGenre.subgenres;
-      this.artistForm.get('genre')?.enable();
-      this.artistForm.get('genre')?.setValue('');
-    } else {
-      this.selectedSubgenres = [];
-      this.artistForm.get('genre')?.disable();
-      this.artistForm.get('genre')?.setValue('');
-    }
-  }
-  onFestivalIdChange(festivalId: string | null): void {
-    const selectedFestival = this.festivalsService.festivals().find(f => f.id === festivalId);
-    this.pickerStartAt.set(selectedFestival!.start_date);
-
-    this.selectedFestivalId.set(festivalId);
-    this.selectedStageId.set(null);
-    this.selectedDate.set(null)
-    this.performanceForm.get('day')?.enable()
-    this.performanceForm.get('stageId')?.enable()
-    this.performanceForm.get('festivalId')?.setValue(this.selectedFestivalId())
+  onSearchNameChange(name: string): void {
+    this.searchName.set(name);
   }
 
-  onStageIdChange(stageId: string | null): void {
-    this.selectedStageId.set(stageId);
-  }
-  onDateChange(date: Date | null): void {
-    this.selectedDate.set(date);
+  onGenreChange(genre: string): void {
+    this.selectedGenre.set(genre);
+    this.selectedSubgenre.set('All');
   }
 
-  festivalDateFilter = (d: Date | null): boolean => {
-    const day = (d || new Date());
-    const festival = this.selectedFestival();
-
-    if (!festival) {
-      return false;
-    }
-    const festivalStart = new Date(festival.start_date.getFullYear(), festival.start_date.getMonth(), festival.start_date.getDate());
-    const festivalEnd = new Date(festival.end_date.getFullYear(), festival.end_date.getMonth(), festival.end_date.getDate());
-    const currentDay = new Date(day.getFullYear(), day.getMonth(), day.getDate());
-
-    return currentDay >= festivalStart && currentDay <= festivalEnd;
-  };
-
-
-  createArtist(): void {
-    if (this.artistForm.valid) {
-      this.artistsService.createArtist(this.artistForm.value).subscribe({
-        next: res => {
-          this.artistsService.error.set("")
-        },
-        error: err => {
-          this.artistsService.error.set(err.error.message)
-        }
-      })
-    }
+  onSubgenreChange(subgenre: string): void {
+    this.selectedSubgenre.set(subgenre);
   }
-  createPreformance(): void {
 
-    if (this.performanceForm.valid) {
-      this.performanceService.createPerformance(this.performanceForm.value).subscribe({
-        next: res => {
-          this.performanceService.error.set("")
-        },
-        error: err => {
-          this.performanceService.error.set(err.error.message)
-        }
-      })
-    }
+  openCreateArtistDialog() {
+    const dialogRef = this.dialog.open(ArtistDialogComponent, {
+      width: '80%',
+      height: '80%',
+      panelClass: 'custom-dialog-container',
+      data: { artist: undefined }
+    });
+
+    dialogRef.afterClosed().subscribe((result: Artist) => {
+      if (result) {
+        this.artistsService.createArtist(result).subscribe({
+          next: res => {
+            this.snackBar.open(`Artist "${res.name}" created successfully!`, 'Close', { duration: 3000 });
+            this.loadArtists();
+          },
+          error: err => {
+            this.snackBar.open(err.error.message, 'Dismiss', { duration: 3000 });
+          }
+        });
+      }
+    });
+  }
+  openUpdateArtistDialog(artist: Artist) {
+    const dialogRef = this.dialog.open(ArtistDialogComponent, {
+      width: '80%',
+      height: '80%',
+      panelClass: 'custom-dialog-container',
+      data: { artist: artist }
+    });
+
+    dialogRef.afterClosed().subscribe((result: Artist) => {
+      if (result) {
+        this.artistsService.updateArtist(result).subscribe({
+          next: res => {
+            this.snackBar.open(`Artist "${res.name}" updated successfully!`, 'Close', { duration: 3000 });
+            this.loadArtists();
+          },
+          error: err => {
+            this.snackBar.open(err.error.message, 'Dismiss', { duration: 3000 });
+          }
+        });
+      }
+    });
   }
 }

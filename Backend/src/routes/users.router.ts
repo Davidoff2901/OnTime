@@ -1,16 +1,20 @@
 import { Router } from "express";
 
-import { getAllUsers, getUserByID, createUser, updateUser, deleteUser, login } from "../controllers/user.controller";
+import { getAllUsers, getUserByID, createUser, updateUser, deleteUser, login, forgotPassword, resetPassword, changePassword } from "../controllers/user.controller";
 import { authenticateJWT, authorizeRoles } from "../helpers/jwt";
 
 const router = Router()
 
+
 router.post('/register', createUser)
 router.post('/login', login)
-router.get('/',  getAllUsers)
+router.post('/forgot-password', forgotPassword);
+router.put('/reset-password', resetPassword);
+router.put('/change-password', changePassword);
+
+router.get('/', getAllUsers)
 router.get('/:id', authenticateJWT, authorizeRoles('ADMIN'), getUserByID)
-router.put('/:id', authenticateJWT, authorizeRoles('USER','ADMIN'), updateUser)
+router.put('/:email', authenticateJWT, authorizeRoles('USER', 'ADMIN', 'ORGANIZER'), updateUser)
 router.delete('/:id', authenticateJWT, authorizeRoles('ADMIN'), deleteUser)
-//update password
 
 export default router;

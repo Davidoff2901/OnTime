@@ -1,20 +1,22 @@
 <div>
     <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
         <mat-form-field class="full-width">
-            <mat-label>Name</mat-label>
+            <mat-label>Email</mat-label>
             <input matInput formControlName="identifier" required />
-            <mat-error>Name is required</mat-error>
+            <mat-error>Email is required</mat-error>
         </mat-form-field>
         <mat-form-field class="full-width">
-            <mat-label>Latitude</mat-label>
-            <input matInput formControlName="password" required />
-            <mat-error>Latitude is required</mat-error>
+            <mat-label>Password</mat-label>
+            <input matInput formControlName="password" type="password" required />
+            <mat-error>Password is required</mat-error>
         </mat-form-field>
 
         <button mat-raised-button color="primary" type="submit">
-            Create Festival
+            Login
         </button>
         <div>{{this.authService.error()}}</div>
-
+        <div>
+            Forgot your password? Click <a class="font-bold" [routerLink]="['/forgot-password']">here</a>
+        </div>
     </form>
 </div>

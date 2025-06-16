@@ -3,15 +3,15 @@ import { MATERIAL_FORM_IMPORTS } from '../../helpers/material-imports';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { Festival } from '../../models/models.type';
-import { Subject, takeUntil } from 'rxjs';
+import { debounceTime, distinctUntilChanged, filter, map, Observable, Subject, takeUntil } from 'rxjs';
 import * as L from 'leaflet';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { provideNativeDateAdapter } from '@angular/material/core';
-import { NgIf } from '@angular/common';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-festival-dialog',
-  imports: [MATERIAL_FORM_IMPORTS, MatDatepickerModule, NgIf],
+  imports: [MATERIAL_FORM_IMPORTS, MatDatepickerModule],
   providers: [provideNativeDateAdapter()],
   templateUrl: './festival-dialog.component.html',
   styleUrl: './festival-dialog.component.scss'
@@ -19,39 +19,79 @@ import { NgIf } from '@angular/common';
 export class FestivalDialogComponent implements OnInit {
   fb = inject(FormBuilder)
   dialogRef = inject(MatDialogRef)
+  private http = inject(HttpClient);
   festivalForm: FormGroup;
   isEditMode: boolean;
   map: L.Map | undefined;
   marker: L.Marker | undefined;
 
-  private destroy$ = new Subject<void>();
+  festivalId?: string;
 
+  private destroy$ = new Subject<void>();
 
   constructor(@Inject(MAT_DIALOG_DATA) public data: { festival?: Festival }) {
     this.isEditMode = !!data.festival
+    this.festivalId = data.festival?.id
+
     this.festivalForm = this.fb.group({
       name: [data.festival?.name, Validators.required],
-      latitude: [data.festival?.latitude, Validators.required],
-      longitude: [data.festival?.longitude, Validators.required],
+      latitude: [data.festival?.latitude, [Validators.required, Validators.min(-90), Validators.max(90)]],
+      longitude: [data.festival?.longitude, [Validators.required, Validators.min(-180), Validators.max(180)]],
+      address: [data.festival?.address || ''],
       start_date: [data.festival?.start_date, [Validators.required]],
       end_date: [data.festival?.end_date, Validators.required],
     });
+
+
   }
 
   ngOnInit(): void {
-    this.festivalForm.get('latitude')?.valueChanges.pipe(takeUntil(this.destroy$)).subscribe(lat => this.updateMarkerLocation());
-    this.festivalForm.get('longitude')?.valueChanges.pipe(takeUntil(this.destroy$)).subscribe(lon => this.updateMarkerLocation());
+    this.festivalForm.get('latitude')?.valueChanges.pipe(
+      takeUntil(this.destroy$),
+      map(lat => {
+        let latitiude = parseFloat(lat);
+        const fixed = Math.max(-90, Math.min(90, latitiude));
+        if (!isNaN(latitiude) && latitiude !== fixed) {
+          this.festivalForm.get('latitude')?.patchValue(fixed, { emitEvent: false });
+        }
+        return fixed;
+      }),
+      filter(lat => typeof lat === 'number' && !isNaN(lat)),
+      debounceTime(500),
+      distinctUntilChanged()
+    ).subscribe(() => this.onCoordsChange());
+
+    this.festivalForm.get('longitude')?.valueChanges.pipe(
+      takeUntil(this.destroy$),
+      map(lon => {
+        let longitude = parseFloat(lon);
+        const fixed = Math.max(-180, Math.min(180, longitude));
+        if (!isNaN(longitude) && longitude !== fixed) {
+          this.festivalForm.get('longitude')?.patchValue(fixed, { emitEvent: false });
+        }
+        return fixed;
+      }),
+      filter(lon => typeof lon === 'number' && !isNaN(lon)),
+      debounceTime(500),
+      distinctUntilChanged()
+    ).subscribe(() => this.onCoordsChange());
+
+    // if (this.isEditMode && this.festivalForm.value.latitude && this.festivalForm.value.longitude) {
+    //   this.onCoordsChange();
+    // }
   }
   ngAfterViewInit(): void {
-    // Delay map initialization slightly to ensure dialog is rendered and has dimensions
     setTimeout(() => {
       this.initMap();
       this.updateMarkerLocation();
-    }, 0);
+      if (this.map) {
+        this.map.invalidateSize();
+      }
+    }, 500);
   }
   ngOnDestroy(): void {
     if (this.map) {
-      this.map.remove(); // Clean up map instance
+      this.map.remove();
     }
     this.destroy$.next();
     this.destroy$.complete();
@@ -65,7 +105,7 @@ export class FestivalDialogComponent implements OnInit {
 
       this.map = L.map('festivalMap', {
         center: initialCoords,
-        zoom: 2,
+        zoom: 10,
         zoomControl: false
       });
 
@@ -107,10 +147,47 @@ export class FestivalDialogComponent implements OnInit {
     }
   }
 
+  private onCoordsChange(): void {
+    this.updateMarkerLocation();
+
+    const lat = this.festivalForm.get('latitude')?.value;
+    const lon = this.festivalForm.get('longitude')?.value;
+
+    if (typeof lat === 'number' && typeof lon === 'number' && !isNaN(lat) && !isNaN(lon) && (lat !== 0 || lon !== 0)) {
+      this.getAddressFromCoords(lat, lon).pipe(
+        takeUntil(this.destroy$)
+      ).subscribe({
+        next: (address) => {
+          this.festivalForm.patchValue({ address: address });
+          console.log('Address updated:', address); // For debugging
+        },
+        error: (err) => {
+          console.error('Error fetching address:', err);
+          this.festivalForm.patchValue({ address: 'Address not found' }); // Provide fallback
+        }
+      });
+    } else {
+      this.festivalForm.patchValue({ address: '' });
+    }
+  }
+  getAddressFromCoords(lat: number, lon: number): Observable<string> {
+    return this.http.get<any>(
+      `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`
+    ).pipe(map(res => res.display_name));
+  }
+
   onSave(): void {
     if (this.festivalForm.valid) {
-      this.dialogRef.close(this.festivalForm.value);
+      const formData = this.festivalForm.getRawValue();
+
+      const payload = {
+        ...formData,
+        ...(this.festivalId ? { id: this.festivalId } : {})
+      }
+
+      this.dialogRef.close(payload);
     }
+    
   }
   onCancel(): void {
     this.dialogRef.close();

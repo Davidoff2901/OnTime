@@ -5,11 +5,10 @@
         @for (item of festivalsService.festivals(); track $index) {
         <mat-card class="w-[80%] items-center ">
             <mat-card-header>
-                <div mat-card-avatar class="example-header-image"></div>
                 <mat-card-title>{{item.name}}</mat-card-title>
             </mat-card-header>
             <mat-card-content>
-                <div>{{item.start_date | date: 'd MMMM ' }} - {{item.end_date | date: 'd MMMM y'
+                <div>{{item.start_date | date: 'd ' }} - {{item.end_date | date: 'd MMMM y'
                     }}</div>
             </mat-card-content>
             <mat-card-actions>

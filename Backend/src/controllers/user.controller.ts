@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import * as userService from "../services/user.service"
+import { HttpError } from "../helpers/httpError";
 
 
 export async function getAllUsers(req: Request, res: Response, next: NextFunction) {
@@ -40,12 +41,54 @@ export async function login(req: Request, res: Response, next: NextFunction) {
 
 export async function updateUser(req: Request, res: Response, next: NextFunction) {
     try {
-        const user = await userService.updateUser(req.params.id, req.body);
+        const user = await userService.updateUser(req.params.email, req.body);
         res.json(user);
     } catch (err) {
         next(err)
     }
 };
+export async function changePassword(req: Request, res: Response, next: NextFunction) {
+    try {
+        const user = await userService.changePassword(req.body.email, req.body.old_password, req.body.new_password);
+        res.json(user);
+    } catch (err) {
+        next(err)
+    }
+};
+export async function forgotPassword(req: Request, res: Response, next: NextFunction) {
+    try {
+        const { email } = req.body;
+        if (!email) {
+            throw new HttpError(400, "Email is required!")
+        }
+        const result = await userService.forgotPassword(email);
+        res.status(200).json(result);
+    } catch (err) {
+        next(err)
+    }
+};
+export async function resetPassword(req: Request, res: Response, next: NextFunction) {
+    try {
+        const { token } = req.query;
+        const { new_password } = req.body; 
+
+        const regex = /^(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{6,}$/
+
+        if (!token || typeof token !== 'string') {
+            throw new HttpError(400, "Invalid or missing token.")
+        }
+        if (!new_password || !regex.test(new_password)) {
+            throw new HttpError(400, "New password does not meet requirements.")
+        }
+
+        const result = await userService.resetPassword(token, new_password);
+        res.status(200).json(result);
+    } catch (err) {
+        next(err)
+    }
+};
+
+
 export async function deleteUser(req: Request, res: Response, next: NextFunction) {
     try {
         await userService.deleteUserById(req.params.id);

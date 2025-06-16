@@ -9,6 +9,8 @@ import { authGuard } from './guards/auth.guard';
 import { ArtistsAdminComponent } from './pages/artists-admin/artists-admin.component';
 import { TicketsComponent } from './pages/tickets/tickets.component';
 import { ProfileComponent } from './pages/profile/profile.component';
+import { ForgotPasswordComponent } from './pages/forgot-password/forgot-password.component';
+import { ResetPasswordComponent } from './pages/reset-password/reset-password.component';
 
 export const routes: Routes = [{
     path: "",
@@ -28,6 +30,20 @@ export const routes: Routes = [{
     pathMatch: 'full',
     canActivate: [authGuard],
     component: ProfileComponent,
+    data: { roles: ['USER', 'ORGANIZER', 'ADMIN'] }
+
+},
+{
+    path: "forgot-password",
+    pathMatch: 'full',
+    component: ForgotPasswordComponent,
+    data: { roles: ['USER', 'ORGANIZER', 'ADMIN'] }
+
+},
+{
+    path: "reset-password",
+    pathMatch: 'full',
+    component: ResetPasswordComponent,
     data: { roles: ['USER', 'ORGANIZER', 'ADMIN'] }
 
 },

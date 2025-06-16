@@ -1,23 +1,4 @@
 <div>
-    <!-- <div class="grid grid-cols-3 justify-items-center">
-        @for (item of festivals(); track $index) {
-        <mat-card class="w-[80%] items-center ">
-            <mat-card-header>
-                <div mat-card-avatar class="example-header-image"></div>
-                <mat-card-title>{{item.festival.name}}</mat-card-title>
-            </mat-card-header>
-            <mat-card-content>
-                <div>{{item.festival.start_date| date: 'd MMMM ' }} - {{item.festival.end_date| date: 'd MMMM y'}}</div>
-            </mat-card-content>
-            <mat-card-actions>
-                <button mat-raised-button color="primary">
-                    Open
-                </button>
-            </mat-card-actions>
-        </mat-card>
-        }
-    </div> -->
-
     @if (festivals().length === 0) {
     <div>
         You have no tickets bought.

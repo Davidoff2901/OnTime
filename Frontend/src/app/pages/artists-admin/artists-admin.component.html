@@ -1,108 +1,69 @@
-<div>
-    <form [formGroup]="artistForm" (ngSubmit)="createArtist()">
-        <mat-form-field class="full-width">
-            <mat-label>Name</mat-label>
-            <input matInput formControlName="name" required />
-            <mat-error>Name is required</mat-error>
-        </mat-form-field>
-        <mat-form-field appearance="fill">
-            <mat-label>Main Genre</mat-label>
-            <mat-select [value]="selectedMainGenreName" (selectionChange)="onMainGenreChange($event)" required>
-                <!-- <mat-option *ngFor="let genre of musicGenres" [value]="genre.name">
-                    {{ genre.name }}
-                </mat-option> -->
-                @for (genre of musicGenres; track genre) {
-                <mat-option [value]="genre.name">{{genre.name}} </mat-option>
-                }
-            </mat-select>
-            <mat-error>
-                Main Genre is required
-            </mat-error>
+<div class="container mx-auto p-5 ">
+    <div class="flex justify-between items-center mb-8">
+        <h1 class="text-4xl font-extrabold text-gray-900 leading-tight">Artist Manager</h1>
+        <button mat-flat-button (click)="openCreateArtistDialog()"
+            class="!bg-green-600 hover:!bg-green-700 text-white font-semibold py-3 px-6 rounded-lg shadow-lg transform hover:scale-105 transition duration-300 ease-in-out">
+            <mat-icon class="mr-2">add_circle</mat-icon> Create New Artist
+        </button>
+    </div>
+
+    @if (this.artistsService.artists().length === 0) {
+    <div class="text-center py-10 text-gray-600 text-xl">
+        No Artists found. Start by creating a new one!
+    </div>
+    }
+    @else {
+    <div class="flex flex-col md:flex-row gap-4 mb-8">
+        <mat-form-field class="flex-grow">
+            <mat-label>Search by Artist Name</mat-label>
+            <input matInput type="text" [ngModel]="searchName()" (ngModelChange)="onSearchNameChange($event)"
+                placeholder="e.g., John Doe" class="rounded-md">
+            @if (searchName()) {
+            <button matSuffix mat-icon-button aria-label="Clear" (click)="onSearchNameChange('')">
+                <mat-icon>close</mat-icon>
+            </button>
+            }
         </mat-form-field>
 
-        <mat-form-field appearance="fill">
-            <mat-label>Subgenre</mat-label>
-            <mat-select formControlName="genre">
-                <!-- <mat-option *ngFor="let subgenre of selectedSubgenres" [value]="subgenre">
-                    {{ subgenre }}
-                </mat-option> -->
-                @for (subgenre of selectedSubgenres; track subgenre) {
-                <mat-option [value]="subgenre">{{subgenre}} </mat-option>
+        <mat-form-field class="w-full md:w-1/4">
+            <mat-label>Filter by Genre</mat-label>
+            <mat-select [ngModel]="selectedGenre()" (ngModelChange)="onGenreChange($event)">
+                <mat-option value="All">All Genres</mat-option>
+                @for (genre of uniqueGenres(); track genre) {
+                <mat-option [value]="genre">{{ genre }}</mat-option>
                 }
             </mat-select>
-            <mat-error>
-                Subgenre is required.
-            </mat-error>
         </mat-form-field>
-        <button mat-raised-button color="primary" type="submit" [disabled]="artistForm.invalid">
-            Create Artist
-        </button>
-        <div>{{this.artistsService.error()}}</div>
-    </form>
 
-    <form [formGroup]="performanceForm" (ngSubmit)="createPreformance()">
-        <mat-form-field appearance="fill">
-            <mat-label>Artist</mat-label>
-            <mat-select formControlName="artistId">
-                <!-- <mat-option *ngFor="let subgenre of selectedSubgenres" [value]="subgenre">
-                    {{ subgenre }}
-                </mat-option> -->
-                @for (artist of artistsService.artists(); track artistsService.artists();) {
-                <mat-option [value]="artist.id">{{artist.name}} </mat-option>
+        <mat-form-field class="w-full md:w-1/4">
+            <mat-label>Filter by Subgenre</mat-label>
+            <mat-select [ngModel]="selectedSubgenre()" (ngModelChange)="onSubgenreChange($event)">
+                <mat-option value="All">All Subgenres</mat-option>
+                @for (subgenre of uniqueSubgenres(); track subgenre) {
+                <mat-option [value]="subgenre">{{ subgenre }}</mat-option>
                 }
             </mat-select>
-            <mat-error>
-                Artist is required.
-            </mat-error>
         </mat-form-field>
-        <mat-form-field appearance="fill">
-            <mat-label>Festival</mat-label>
-            <mat-select [value]="selectedFestivalId()" (selectionChange)="onFestivalIdChange($event.value)">
-                @for (festival of festivalsService.festivals(); track festivalsService.festivals()) {
-                <mat-option [value]="festival.id">{{festival.name}} </mat-option>
-                }
-            </mat-select>
-            <mat-error>
-                Festival is required.
-            </mat-error>
-        </mat-form-field>
-        <mat-form-field appearance="fill">
-            <mat-label>Stage</mat-label>
-            <mat-select formControlName="stageId" [value]="selectedStageId()"
-                (selectionChange)="onStageIdChange($event.value)">
-                @for (stage of selectedFestival()?.stages; track selectedFestival()!) {
-                <mat-option [value]="stage.id">{{stage.name}} </mat-option>
-                }
-            </mat-select>
-            <mat-error>
-                Stage is required.
-            </mat-error>
-        </mat-form-field>
-        <mat-form-field appearance="fill">
-            <mat-label>Choose a date</mat-label>
-            <input matInput [matDatepicker]="picker" [matDatepickerFilter]="festivalDateFilter" [value]="selectedDate()"
-                (dateChange)="onDateChange($event.value)" formControlName="day"> <mat-hint>Date must be within festival
-                dates</mat-hint>
-            <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
-            <mat-datepicker #picker [startAt]="pickerStartAt()"></mat-datepicker>
-        </mat-form-field>
-        <mat-form-field>
-            <mat-label>Start Time</mat-label>
-            <input matInput [matTimepicker]="timepicker" formControlName="start_time" required />
-            <mat-timepicker-toggle matIconSuffix [for]="timepicker"></mat-timepicker-toggle>
-            <mat-timepicker #timepicker interval="15m"></mat-timepicker>
-            <mat-error>Choose Time</mat-error>
-        </mat-form-field>
-        <mat-form-field>
-            <mat-label>End Time</mat-label>
-            <input matInput [matTimepicker]="timepicker2" formControlName="end_time" required />
-            <mat-timepicker-toggle matIconSuffix [for]="timepicker2"></mat-timepicker-toggle>
-            <mat-timepicker interval="15m" #timepicker2></mat-timepicker>
-            <mat-error>Choose Time</mat-error>
-        </mat-form-field>
-        <button mat-raised-button color="primary" type="submit" [disabled]="performanceForm.invalid">
-            Create Artist
-        </button>
-        <div>{{this.performanceService.error()}}</div>
-    </form>
+    </div>
+    <div class="grid grid-cols-3 gap-5 overflow-auto max-h-[80vh]">
+        @for (artist of filteredArtists(); track $index) {
+        <mat-card appearance="outlined">
+            <mat-card-header>
+                <mat-card-title>{{artist.name}}</mat-card-title>
+                <mat-card-subtitle>{{artist.genre}}: {{artist.subgenre}}</mat-card-subtitle>
+                <button (click)="openUpdateArtistDialog(artist)">
+                    <mat-icon>settings</mat-icon>
+                </button>
+            </mat-card-header>
+            <mat-card-content class="!hidden md:!block">
+                <p>{{artist.bio}}</p>
+            </mat-card-content>
+            <mat-card-actions>
+            </mat-card-actions>
+        </mat-card>
+        }
+    </div>
+    }
+
+    
 </div>

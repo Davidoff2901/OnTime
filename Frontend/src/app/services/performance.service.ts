@@ -15,11 +15,16 @@ export class PerformancesService {
 
   constructor() { }
 
-  createPerformance(stage: Performances): Observable<Performances> {
-    return this.http.post<Performances>(this.apiUrl, stage)
-  }
-
+  // getPerformances(): Observable<Performances> {
+  //   return this.http.get<Performances>(this.apiUrl)
+  // }
   getPerformancesByFilter(filter: string): Observable<Performances[]> {
     return this.http.get<Performances[]>(`${this.apiUrl}/${filter}`)
+  }
+  createPerformance(performance: Performances): Observable<Performances> {
+    return this.http.post<Performances>(this.apiUrl, performance)
+  }
+  deletePerofrmance(performanceId: string): Observable<Performances> {
+    return this.http.delete<Performances>(`${this.apiUrl}/${performanceId}`)
   }
 }

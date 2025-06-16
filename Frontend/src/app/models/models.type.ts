@@ -1,8 +1,17 @@
+export type User = {
+    first_name: string
+    last_name: string
+    email: string
+    birthday: Date
+    country_code: string
+    phone: string
+}
 export type Festival = {
     id: string
     name: string
     latitude: number
     longitude: number
+    address: string
     start_date: Date
     end_date: Date
     stages?: Stage[]
@@ -19,6 +28,8 @@ export type Artist = {
     id: string
     name: string
     genre: string
+    subgenre: string
+    bio: string
 }
 
 export type Performances = {

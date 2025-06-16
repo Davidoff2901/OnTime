@@ -21,4 +21,10 @@ export class StagesService {
     createStage(stage: Stage): Observable<Stage> {
         return this.http.post<Stage>(this.apiUrl, stage)
     }
+    updateStage(stage: Stage): Observable<Stage> {
+        return this.http.put<Stage>(`${this.apiUrl}/${stage.id}`, stage)
+    }
+    deleteStage(stageId: string): Observable<Stage> {
+        return this.http.delete<Stage>(`${this.apiUrl}/${stageId}`)
+    }
 }

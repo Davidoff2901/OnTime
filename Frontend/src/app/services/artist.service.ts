@@ -10,7 +10,7 @@ export class ArtistsService {
   http = inject(HttpClient)
   private apiUrl = 'http://localhost:1234/api/artists';
 
-  artists = signal<Artist[] | null>(null);
+  artists = signal<Artist[]>([]);
   error = signal<string | null>(null);
 
   constructor() { }
@@ -21,5 +21,13 @@ export class ArtistsService {
 
   createArtist(artist: Artist): Observable<Artist> {
     return this.http.post<Artist>(this.apiUrl, artist)
+  }
+
+  updateArtist(artist: Artist): Observable<Artist> {
+    return this.http.put<Artist>(`${this.apiUrl}/${artist.id}`, artist)
+  }
+
+  deleteArtist(artistId: string): Observable<Artist>{
+    return this.http.delete<Artist>(`${this.apiUrl}/${artistId}`)
   }
 }

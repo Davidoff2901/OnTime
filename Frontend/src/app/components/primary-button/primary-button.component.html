@@ -1,3 +1,10 @@
+@if (icon()) {
+<button mat-raised-button (click)="btnClick.emit()" class="bg-teal-950">
+    <mat-icon>{{icon()}}</mat-icon>
+</button>
+}
+@else {
 <button mat-raised-button (click)="btnClick.emit()" class="bg-teal-950">
     {{label()}}
 </button>
+}

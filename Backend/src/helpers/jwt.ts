@@ -32,7 +32,7 @@ export function authenticateJWT(req: AuthenticatedRequest, res: Response, next: 
 
   try {
     const decoded = verifyJWT(token)
-    req.user = decoded.filtered;
+    req.user = decoded;
     next();
   } catch (err) {
     throw new HttpError(401, 'Unauthorized: Invalid token')

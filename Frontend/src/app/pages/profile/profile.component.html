@@ -1,1 +1,56 @@
-<p>profile works!</p>
+<div class="container mx-auto p-5  min-h-screen">
+    <form [formGroup]="profileForm" (ngSubmit)="onSubmit()" class="profile-form">
+        <mat-card>
+            <mat-card-title>Profile</mat-card-title>
+            <mat-card-content>
+                <div class="form-grid">
+                    <mat-form-field>
+                        <mat-label>First Name</mat-label>
+                        <input matInput formControlName="first_name" />
+                        <mat-error>
+                            First name is required
+                        </mat-error>
+                    </mat-form-field>
+                    <mat-form-field>
+                        <mat-label>Last Name</mat-label>
+                        <input matInput formControlName="last_name" />
+                        <mat-error>
+                            Last name is required
+                        </mat-error>
+                    </mat-form-field>
+                    <mat-form-field>
+                        <mat-label>Birthday</mat-label>
+                        <input matInput [matDatepicker]="endDatePicker" formControlName="birthday" readonly>
+                        <mat-datepicker-toggle matSuffix [for]="endDatePicker"></mat-datepicker-toggle>
+                        <mat-datepicker #endDatePicker></mat-datepicker>
+                        <mat-error>
+                            Birthday is required.
+                        </mat-error>
+                    </mat-form-field>
+                    <mat-form-field>
+                        <mat-label>Phone</mat-label>
+                        <input matInput formControlName="phone" />
+                        <mat-error>
+                            Phone is required
+                        </mat-error>
+                    </mat-form-field>
+                    <mat-form-field>
+                        <mat-label>Country Code</mat-label>
+                        <input matInput formControlName="country_code" />
+                        <mat-error>
+                            Country code is required
+                        </mat-error>
+                    </mat-form-field>
+                </div>
+            </mat-card-content>
+            <mat-card-actions align="end">
+                <button mat-raised-button color="primary" type="submit" [disabled]="profileForm.invalid">
+                    Update Profile
+                </button>
+            </mat-card-actions>
+        </mat-card>
+    </form>
+    <button mat-raised-button color="primary" (click)="openChangePasswordDialog()">
+        Change Password
+    </button>
+</div>

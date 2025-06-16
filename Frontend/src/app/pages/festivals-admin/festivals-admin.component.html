@@ -1,4 +1,4 @@
-<div class="container mx-auto p-6 bg-gray-50 min-h-screen">
+<div class="container mx-auto p-5  min-h-screen">
     <div class="flex justify-between items-center mb-8">
         <h1 class="text-4xl font-extrabold text-gray-900 leading-tight">Festival Manager</h1>
         <button mat-flat-button (click)="openCreateFestivalDialog()"
@@ -15,21 +15,23 @@
     @else {
     <mat-accordion>
         @for (festival of festivalsService.festivals(); track $index) {
-        <div class="grid grid-cols-12 items-center">
+        <div class="grid grid-cols-12  gap-3 pb-5">
             <mat-expansion-panel class="col-span-10 ">
-                <mat-expansion-panel-header>
+                <mat-expansion-panel-header class="!h-20">
                     <mat-panel-title>
                         {{festival.name}} |
-                        {{festival.start_date | date: 'd MMMM ' }} - {{festival.end_date | date: 'd MMMM y' }}
+                        {{festival.start_date | date: 'd' }} - {{festival.end_date | date: 'd MMMM y' }}
                     </mat-panel-title>
-                    <mat-panel-description>
+                    <mat-panel-description class="!hidden md:!block">
                         <mat-icon class="align-middle text-blue-600 mr-1">location_on</mat-icon>
-                        Lat: {{ festival.latitude | number:'1.4-4' }}..., Long: {{ festival.longitude | number:'1.4-4'
-                        }}...
+                        {{festival.address }}
                     </mat-panel-description>
                 </mat-expansion-panel-header>
                 @if (festival.stages?.length === 0) {
                 <div>No stages for this festival</div>
+                <button mat-raised-button color="primary" class="col-span-2" (click)="openAddStageDialog(festival.id)">
+                    <mat-icon class="mr-2">add_circle</mat-icon> Add Stage
+                </button>
                 }
                 @else {
                 <div class="grid grid-cols-2">
@@ -40,89 +42,36 @@
                             <mat-card-title class="!font-bold">{{ stage.name }}</mat-card-title>
                         </mat-card-header>
                         <mat-card-actions>
-                            <button mat-raised-button color="primary" class="col-span-2" (click)="createStage()">
+                            <button mat-raised-button color="primary" class="col-span-2"
+                                (click)="openUpdateStageDialog(stage)">
                                 Change
                             </button>
+
                         </mat-card-actions>
+                        <button color="primary" class="col-span-2" (click)="deleteStage(stage.id)">
+                            <mat-icon class="mr-2">delete_forever</mat-icon>
+                        </button>
                     </mat-card>
                     }
                 </div>
-                <button mat-raised-button color="primary" class="col-span-2" (click)="createStage()">
-                    Add Stage
+                <button mat-raised-button color="primary" class="col-span-2" (click)="openAddStageDialog(festival.id)">
+                    <mat-icon class="mr-2">add_circle</mat-icon> Add Stage
                 </button>
                 }
 
             </mat-expansion-panel>
-            <button mat-raised-button color="primary" class="col-span-2" (click)="openUpdateFestivalDialog(festival)">
-                Change
-            </button>
+            <div class="flex flex-col gap-3 w-24">
+                <button mat-raised-button color="primary" class="col-span-2"
+                    (click)="openUpdateFestivalDialog(festival)">
+                    Change
+                </button>
+                <button mat-raised-button color="primary" class="col-span-2" (click)="openScheduleDialog(festival)">
+                    Schedule
+                </button>
+            </div>
         </div>
         }
     </mat-accordion>
     }
-
-
-    <!-- <form [formGroup]="festivalForm" (ngSubmit)="createFestival()">
-        <mat-form-field class="full-width">
-            <mat-label>Name</mat-label>
-            <input matInput formControlName="name" required />
-            <mat-error>Name is required</mat-error>
-        </mat-form-field>
-        <mat-form-field class="full-width">
-            <mat-label>Latitude</mat-label>
-            <input matInput formControlName="latitude" inputmode="numeric" type="number" required />
-            <mat-error>Latitude is required</mat-error>
-        </mat-form-field>
-        <mat-form-field class="full-width">
-            <mat-label>Longitude</mat-label>
-            <input matInput formControlName="longitude" inputmode="numeric" type="number" required />
-            <mat-error>Longitude is required</mat-error>
-        </mat-form-field>
-        <mat-form-field>
-            <mat-label>Start date</mat-label>
-            <input matInput [matDatepicker]="datepicker" formControlName="start_date" required>
-            <mat-hint>MM/DD/YYYY</mat-hint>
-            <mat-datepicker-toggle matIconSuffix [for]="datepicker"></mat-datepicker-toggle>
-            <mat-datepicker #datepicker></mat-datepicker>
-            <mat-error>Date is required</mat-error>
-        </mat-form-field>
-        <mat-form-field>
-            <mat-label>End date</mat-label>
-            <input matInput [matDatepicker]="datepicker2" formControlName="end_date" required>
-            <mat-hint>MM/DD/YYYY</mat-hint>
-            <mat-datepicker-toggle matIconSuffix [for]="datepicker2"></mat-datepicker-toggle>
-            <mat-datepicker #datepicker2></mat-datepicker>
-            <mat-error>Date is required</mat-error>
-        </mat-form-field>
-        <div class="grid place-items-center">
-            <div id="map" class="cell" style="height: 500px; width: 70%; margin-top: 1rem;"></div>
-        </div>
-        <button mat-raised-button color="primary" type="submit" [disabled]="festivalForm.invalid">
-            Create Festival
-        </button>
-        <div>{{this.festivalsService.error()}}</div>
-    </form> -->
-
-
-    <!-- <form [formGroup]="stageForm" (ngSubmit)="createStage()">
-        <mat-form-field class="full-width">
-            <mat-label>Name</mat-label>
-            <input matInput formControlName="name" required />
-            <mat-error>Name is required</mat-error>
-        </mat-form-field>
-        <mat-form-field>
-            <mat-label>Festival</mat-label>
-            <mat-select formControlName="festivalId">
-                @for (festival of festivals(); track festival) {
-                <mat-option [value]="festival.id">{{festival.name}} </mat-option>
-                }
-            </mat-select>
-        </mat-form-field>
-        <button mat-raised-button color="primary" type="submit" [disabled]="stageForm.invalid">
-            Create Stage
-        </button>
-        <div>{{this.stagesService.error()}}</div>
-
-    </form> -->
 
 </div>

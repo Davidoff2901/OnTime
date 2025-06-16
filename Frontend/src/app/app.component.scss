@@ -1,0 +1,7 @@
+.main-background {
+    background: #5C04801A;
+    background: linear-gradient(180deg, rgba(92, 4, 128, 1) 0%, rgba(50, 4, 128, 1) 0%, rgba(0, 0, 0, 1) 100%);
+}
+::ng-deep .mat-mdc-dialog-inner-container {
+  min-width: 0 !important;
+}

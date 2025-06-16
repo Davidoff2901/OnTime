@@ -1,27 +1,52 @@
 <div>
-    <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+    <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class=" grid justify-items-center">
         <mat-form-field class="full-width">
-            <mat-label>Name</mat-label>
+            <mat-label>First Name</mat-label>
             <input matInput formControlName="first_name" required />
-            <mat-error>Name is required</mat-error>
+            <mat-error>First Name is required</mat-error>
         </mat-form-field>
         <mat-form-field class="full-width">
-            <mat-label>Name</mat-label>
+            <mat-label>Last Name</mat-label>
             <input matInput formControlName="last_name" required />
-            <mat-error>Name is required</mat-error>
+            <mat-error>Last Name is required</mat-error>
         </mat-form-field>
         <mat-form-field class="full-width">
             <mat-label>Email</mat-label>
             <input matInput formControlName="email" type="email" required />
-            <mat-error>Name is required</mat-error>
+            @if (registerForm.get('email')?.hasError('required') && registerForm.get('email')?.touched) {
+            <mat-error>Email is required</mat-error>
+            }
+            @if (registerForm.get('email')?.hasError('email') && registerForm.get('email')?.touched) {
+            <mat-error>Email is not valid</mat-error>
+            }
         </mat-form-field>
         <mat-form-field class="full-width">
-            <mat-label>password</mat-label>
-            <input matInput formControlName="password" type="password" required />
-            <mat-error>Latitude is required</mat-error>
+            <mat-label>Password</mat-label>
+            <input #passwordInput matInput formControlName="password" type="password" required
+                (input)="onPasswordInputChange()" />
+
+            @if (registerForm.get('password')?.hasError('required') && registerForm.get('password')?.touched) {
+            <mat-error>Password is required</mat-error>
+            }
+
+        </mat-form-field>
+        @if (showPasswordTooltip) {
+        <div class="custom-tooltip">
+            {{ passwordTooltipMessage }}
+        </div>
+        }
+        <mat-form-field class="full-width">
+            <mat-label>Confirm Password</mat-label>
+            <input matInput formControlName="confirm_password" type="password" required />
+            @if (registerForm.get('confirm_password')?.hasError('passwordsMismatch') &&
+            registerForm.get('confirm_password')?.touched) {
+            <mat-error>Passwords do not match</mat-error>
+            }
+
+
         </mat-form-field>
 
-        <button mat-raised-button color="primary" type="submit">
+        <button mat-raised-button color="primary" type="submit" [disabled]="!registerForm.valid">
             Create Festival
         </button>
         <div>{{this.userService.error()}}</div>

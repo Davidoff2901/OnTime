@@ -27,7 +27,6 @@ export class LineUpComponent implements OnInit {
     const email = this.authService.getEmail()
     this.ticketsService.getFestivalsByTicket(email!).subscribe({
       next: res => {
-        console.log(res)
         this.festivals.set(res)
       }
     })
