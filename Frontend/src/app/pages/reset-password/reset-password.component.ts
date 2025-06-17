@@ -97,7 +97,6 @@ export class ResetPasswordComponent implements OnInit {
           this.router.navigate(['/login']);
         },
         error: (err) => {
-          console.error('Reset password error:', err);
           const errorMessage = err.error?.message || 'Failed to reset password. Invalid or expired token.';
           this.snackBar.open(errorMessage, 'Close', {
             duration: 5000,

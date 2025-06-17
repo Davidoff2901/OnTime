@@ -126,7 +126,6 @@ export async function changePassword(email: string, old_password: string, new_pa
             throw new HttpError(404, 'User not found.');
         }
 
-        console.log(email, old_password, new_password, user.password)
         const isPasswordValid = await comparePasswords(old_password, user.password);
 
         if (!isPasswordValid) {
@@ -154,7 +153,6 @@ export async function changePassword(email: string, old_password: string, new_pa
 
         return updatedUser;
     } catch (error) {
-        console.log(error)
         if (error instanceof HttpError) throw error
         throw new HttpError(500, "Internal server error")
     }
@@ -220,7 +218,6 @@ export async function forgotPassword(email: string) {
 
         return { success: true, message: 'Password reset link sent to your email!' };
     } catch (error) {
-        console.log(error)
         if (error instanceof HttpError) throw error
 
         await db.users.update({

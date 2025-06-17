@@ -21,12 +21,29 @@ export async function getPerformanceByID(req: Request, res: Response, next: Next
     }
 };
 
-export async function getPerformancesByFilter(req: Request, res: Response, next: NextFunction) {
+// export async function getPerformancesByFilter(req: Request, res: Response, next: NextFunction) {
+//     try {
+//         const performances = await performancesService.findAllByFilters(req.params);
+//         res.status(200).json(performances);
+//     } catch (err) {
+//         next(err)
+//     }
+// }
+export async function getStagePerformances(req: Request, res: Response, next: NextFunction) {
     try {
-        const performances = await performancesService.findAllByFilters(req.params);
-        res.status(200).json(performances);
-    } catch (err) {
-        next(err)
+        const { festivalId, stageId } = req.params;
+        const { day, artistName } = req.query;
+
+        const performances = await performancesService.getPerformancesForStage(
+            festivalId,
+            stageId,
+            day as string | undefined,
+            artistName as string | undefined
+        );
+
+        res.json(performances);
+    } catch (error: any) {
+        next(error)
     }
 }
 
@@ -48,20 +65,33 @@ export async function createPerformance(req: Request, res: Response, next: NextF
 
 export async function updatePerformance(req: Request, res: Response, next: NextFunction) {
     try {
-        const day = new Date(req.params.day);
-        const data = {
-            ...req.body,
-            start_time: req.body.start_time ? new Date(req.body.start_time) : undefined,
-            end_time: req.body.end_time ? new Date(req.body.end_time) : undefined,
-        };
+        const performanceId = req.params.id;
+        const updateData = req.body;
 
-        if (!data.start_date || !data.end_date) {
-            throw new HttpError(400, "No valid dates")
+
+        if (!performanceId) {
+            throw new HttpError(400, 'Performance ID is required.');
         }
-        const festival = await performancesService.update(req.params.id, req.body);
-        res.status(200).json(festival);
-    } catch (err) {
-        next(err)
+
+        if (updateData.day) {
+            updateData.day = new Date(updateData.day);
+        }
+        if (updateData.start_time) {
+            updateData.start_time = new Date(updateData.start_time);
+        }
+        if (updateData.end_time) {
+            updateData.end_time = new Date(updateData.end_time);
+        }
+
+        const updatedPerformance = await performancesService.update(performanceId, updateData);
+
+        res.status(200).json({
+            message: 'Artist performance updated successfully.',
+            performance: updatedPerformance,
+        });
+
+    } catch (error) {
+        next(error);
     }
 };
 export async function deletePerformance(req: Request, res: Response, next: NextFunction) {

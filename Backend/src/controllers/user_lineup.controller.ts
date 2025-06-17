@@ -10,6 +10,15 @@ export async function getLineup(req: Request, res: Response, next: NextFunction)
     }
 };
 
+export async function getUserLineup(req: Request, res: Response, next: NextFunction) {
+    try {
+        const lineup = await lineupService.getUserLineupsByUser(req.params.email);
+        res.json(lineup);
+    } catch (err) {
+        next(err)
+    }
+};
+
 export async function createLineup(req: Request, res: Response, next: NextFunction) {
     try {
         const lineup = await lineupService.create(req.body);

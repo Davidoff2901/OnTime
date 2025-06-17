@@ -5,7 +5,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 
 import { StagesService } from '../../services/stage.service';
 import { TicketsService } from '../../services/tickets.service';
-import { Festival, Stage, } from '../../models/models.type';
+import { Festival, Performances, Stage, } from '../../models/models.type';
 import { AuthService } from '../../services/auth.service';
 import { MatDialog, } from '@angular/material/dialog';
 import { MatCardModule } from '@angular/material/card';
@@ -17,9 +17,12 @@ import { StageDialogComponent } from '../../components/stage-dialog/stage-dialog
 import { ConfirmDialogComponent } from '../../components/confirm-dialog/confirm-dialog.component';
 import { ScheduleComponent } from '../../components/schedule/schedule.component';
 import { PerformancesService } from '../../services/performance.service';
+import { PrimaryButtonComponent } from "../../components/primary-button/primary-button.component";
+import { FormatDatePipe, FormatTimePipe } from '../../helpers/formatters.pipe';
 @Component({
   selector: 'app-festivals-admin',
-  imports: [MATERIAL_FORM_IMPORTS, MatCardModule, CommonModule, MatIconModule, MatExpansionModule],
+  imports: [MATERIAL_FORM_IMPORTS, MatCardModule, CommonModule,
+    MatIconModule, MatExpansionModule, PrimaryButtonComponent, FormatDatePipe, FormatTimePipe],
   providers: [],
   templateUrl: './festivals-admin.component.html',
   styleUrl: './festivals-admin.component.scss'
@@ -50,7 +53,6 @@ export class FestivalsAdminComponent implements OnInit {
   openCreateFestivalDialog(): void {
     const dialogRef = this.dialog.open(FestivalDialogComponent, {
       height: '80%',
-      maxWidth: 'none',
       panelClass: 'custom-dialog-container',
       data: { festival: undefined }
     });
@@ -161,6 +163,45 @@ export class FestivalsAdminComponent implements OnInit {
         this.performanceService.createPerformance(result).subscribe({
           next: res => {
             this.snackBar.open(`Performance created successfully!`, 'Close', { duration: 2000 });
+            this.loadFestivals()
+          },
+          error: err => {
+            this.snackBar.open(err.error.message, 'Dismiss', { duration: 3000 });
+          }
+        });
+      }
+    });
+  }
+  openUpdateScheduleDialog(performance: Performances, festival: Festival): void {
+    const dialogRef = this.dialog.open(ScheduleComponent, {
+      data: { artistPerformance: performance, festival: festival }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.performanceService.updatePerformance(result.performanceId, result.data).subscribe({
+          next: res => {
+            this.snackBar.open(`Performance updated successfully!`, 'Close', { duration: 2000 });
+            this.loadFestivals()
+          },
+          error: err => {
+            this.snackBar.open(err.error.message, 'Dismiss', { duration: 3000 });
+          }
+        });
+      }
+    });
+  }
+  deletePerformance(performanceId: string) {
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      data: { performanceId: performanceId, title: "Are you sure you want to delete this performance?" }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.performanceService.deletePerofrmance(performanceId).subscribe({
+          next: res => {
+            this.snackBar.open(`Performance deleted successfully!`, 'Close', { duration: 2000 });
+            this.loadFestivals();
           },
           error: err => {
             this.snackBar.open(err.error.message, 'Dismiss', { duration: 3000 });

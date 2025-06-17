@@ -24,7 +24,7 @@
 
         <mat-form-field class="w-full">
             <mat-label>End Date</mat-label>
-            <input matInput [matDatepicker]="endDatePicker" formControlName="end_date" readonly>
+            <input matInput [matDatepicker]="endDatePicker" formControlName="end_date" readonly [min]="minEndDate">
             <mat-datepicker-toggle matSuffix [for]="endDatePicker"></mat-datepicker-toggle>
             <mat-datepicker #endDatePicker></mat-datepicker>
             <mat-error>

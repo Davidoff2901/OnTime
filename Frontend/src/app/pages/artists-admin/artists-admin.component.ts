@@ -13,9 +13,11 @@ import { ArtistDialogComponent } from '../../components/artist-dialog/artist-dia
 import { MatCardModule } from '@angular/material/card';
 import { CommonModule } from '@angular/common';
 import { MatSelectModule } from '@angular/material/select';
+import { PrimaryButtonComponent } from "../../components/primary-button/primary-button.component";
+import { ConfirmDialogComponent } from '../../components/confirm-dialog/confirm-dialog.component';
 @Component({
   selector: 'app-artists-admin',
-  imports: [MATERIAL_FORM_IMPORTS, MatCardModule, MatIconModule, CommonModule, MatSelectModule],
+  imports: [MATERIAL_FORM_IMPORTS, MatCardModule, MatIconModule, CommonModule, MatSelectModule, PrimaryButtonComponent],
   templateUrl: './artists-admin.component.html',
   styleUrl: './artists-admin.component.scss'
 })
@@ -136,4 +138,23 @@ export class ArtistsAdminComponent implements OnInit {
       }
     });
   }
+  deleteArtist(artistId: string) {
+      const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+        data: { stageId: artistId, title: "Are you sure you want to delete this artist?" }
+      });
+  
+      dialogRef.afterClosed().subscribe(result => {
+        if (result) {
+          this.artistsService.deleteArtist(artistId).subscribe({
+            next: res => {
+              this.snackBar.open(`Artist deleted successfully!`, 'Close', { duration: 2000 });
+              this.loadArtists();
+            },
+            error: err => {
+              this.snackBar.open(err.error.message, 'Dismiss', { duration: 3000 });
+            }
+          });
+        }
+      });
+    }
 }

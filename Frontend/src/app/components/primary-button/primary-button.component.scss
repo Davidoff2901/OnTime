@@ -1,0 +1,10 @@
+@import "../../../styles/colors";
+
+.neon:hover {
+    color: $neon;
+    cursor: pointer;
+}
+
+.pink-bg {
+    background: linear-gradient(237.87deg, rgb(116, 47, 255) 0%, rgb(230, 50, 196) 100%);
+}

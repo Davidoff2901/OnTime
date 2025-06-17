@@ -8,7 +8,7 @@ import * as L from 'leaflet';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { provideNativeDateAdapter } from '@angular/material/core';
 import { HttpClient } from '@angular/common/http';
-
+import moment from 'moment';
 @Component({
   selector: 'app-festival-dialog',
   imports: [MATERIAL_FORM_IMPORTS, MatDatepickerModule],
@@ -26,6 +26,8 @@ export class FestivalDialogComponent implements OnInit {
   marker: L.Marker | undefined;
 
   festivalId?: string;
+  minEndDate?: Date;
+
 
   private destroy$ = new Subject<void>();
 
@@ -42,7 +44,12 @@ export class FestivalDialogComponent implements OnInit {
       end_date: [data.festival?.end_date, Validators.required],
     });
 
-
+    const initialStartDate = this.festivalForm.get('start_date')?.value;
+    if (initialStartDate) {
+      this.minEndDate = moment(initialStartDate).add(1, 'days').toDate();
+    } else {
+      this.minEndDate = new Date();
+    }
   }
 
   ngOnInit(): void {
@@ -79,6 +86,21 @@ export class FestivalDialogComponent implements OnInit {
     // if (this.isEditMode && this.festivalForm.value.latitude && this.festivalForm.value.longitude) {
     //   this.onCoordsChange();
     // }
+
+    this.festivalForm.get('start_date')?.valueChanges.pipe(
+      takeUntil(this.destroy$)
+    ).subscribe(startDate => {
+      if (startDate) {
+        this.minEndDate = moment(startDate).add(1, 'days').toDate();
+        const endDate = this.festivalForm.get('end_date')?.value;
+        if (endDate && moment(endDate).isBefore(this.minEndDate, 'day')) {
+          this.festivalForm.get('end_date')?.patchValue(null);
+        }
+      } else {
+        this.minEndDate = new Date();
+      }
+      this.festivalForm.get('end_date')?.updateValueAndValidity();
+    });
   }
   ngAfterViewInit(): void {
     setTimeout(() => {
@@ -187,7 +209,7 @@ export class FestivalDialogComponent implements OnInit {
 
       this.dialogRef.close(payload);
     }
-    
+
   }
   onCancel(): void {
     this.dialogRef.close();

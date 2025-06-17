@@ -8,7 +8,7 @@ import { MATERIAL_FORM_IMPORTS } from '../../helpers/material-imports';
 
 @Component({
   selector: 'app-change-password-dialog',
-  imports: [MatDialogModule, MATERIAL_FORM_IMPORTS],
+  imports: [MatDialogModule, MATERIAL_FORM_IMPORTS, ],
   templateUrl: './change-password-dialog.component.html',
   styleUrl: './change-password-dialog.component.scss'
 })
@@ -40,7 +40,6 @@ export class ChangePasswordDialogComponent implements OnInit {
     this.passwordTooltip = updatePasswordTooltip('');
   }
   onChange() {
-    console.log(this.showPasswordTooltip)
     this.showPasswordTooltip = onInputChange(this.changePasswordForm, 'new_password')
   }
 

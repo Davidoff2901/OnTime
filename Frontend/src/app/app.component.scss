@@ -1,7 +1,56 @@
+@import "../styles/colors";
+
 .main-background {
-    background: #5C04801A;
-    background: linear-gradient(180deg, rgba(92, 4, 128, 1) 0%, rgba(50, 4, 128, 1) 0%, rgba(0, 0, 0, 1) 100%);
+  background: #5C04801A;
+  background: linear-gradient(180deg, rgba(92, 4, 128, 1) 0%, rgba(50, 4, 128, 1) 0%, rgba(0, 0, 0, 1) 100%);
 }
+
 ::ng-deep .mat-mdc-dialog-inner-container {
   min-width: 0 !important;
+  max-height: 80vh !important;
+}
+::ng-deep .mat-mdc-dialog-container{
+  background-color: rgba(30, 30, 30, 0.8);
+}
+
+::ng-deep .mat-mdc-card {
+  background-color: rgb(50, 50, 50) !important;
+  box-shadow: none !important;
+}
+
+::ng-deep .mat-mdc-card-subtitle {
+  color: white !important
+}
+
+::ng-deep .mat-expansion-panel {
+  color: white !important;
+  background-color: rgb(30, 30, 30) !important;
+}
+
+::ng-deep .mat-expansion-panel-header-title {
+  color: white !important;
+}
+
+::ng-deep .mat-mdc-raised-button:not(:disabled) {
+  color: white !important;
+  background: linear-gradient(237.87deg, $purple 0%, $pink 100%);
+  background-color: transparent !important;
+}
+
+::ng-deep .mdc-text-field--filled:not(.mdc-text-field--disabled) {
+  background-color: rgba(0, 0, 0, 0.1) !important;
+}
+
+::ng-deep .mdc-text-field--filled:not(.mdc-text-field--disabled) .mdc-floating-label {
+  color: white !important;
+}
+::ng-deep .mat-mdc-form-field-icon-suffix, .mat-datepicker-toggle, .mat-mdc-icon-button{
+  color:white !important
+}
+::ng-deep .mdc-text-field--filled:not(.mdc-text-field--disabled) .mdc-text-field__input{
+  color: white !important
+}
+
+::ng-deep .mat-mdc-dialog-surface{
+  background-color: transparent !important;
 }

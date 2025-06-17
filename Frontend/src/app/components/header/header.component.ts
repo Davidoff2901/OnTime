@@ -16,6 +16,9 @@ export class HeaderComponent {
   authService = inject(AuthService)
   isScrolled = false;
   router = inject(Router)
+  isMobileMenuOpen = false
+
+
   @HostListener('window:scroll', [])
   onWindowScroll() {
     this.isScrolled = window.pageYOffset > 0;
@@ -24,5 +27,12 @@ export class HeaderComponent {
   logout() {
     this.authService.logoutUser()
     this.router.navigate(['/'])
+  }
+
+  toggleMobileMenu(): void {
+    this.isMobileMenuOpen = !this.isMobileMenuOpen;
+  }
+  closeMobileMenu(){
+    this.isMobileMenuOpen = false
   }
 }

@@ -21,6 +21,9 @@ export class FestivalsService {
   getFestivalsByOrganizer(organizerEmail: string): Observable<Festival[]> {
     return this.http.get<Festival[]>(`${this.apiUrl}/by-organizer/${organizerEmail} `)
   }
+  getFestivalDetails(id: string): Observable<Festival> {
+    return this.http.get<Festival>(`${this.apiUrl}/${id}`);
+  }
   createFestival(festival: Festival): Observable<Festival> {
     return this.http.post<Festival>(this.apiUrl, festival)
   }

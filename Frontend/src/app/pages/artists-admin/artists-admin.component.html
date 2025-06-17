@@ -47,13 +47,14 @@
     </div>
     <div class="grid grid-cols-3 gap-5 overflow-auto max-h-[80vh]">
         @for (artist of filteredArtists(); track $index) {
-        <mat-card appearance="outlined">
+        <mat-card>
             <mat-card-header>
                 <mat-card-title>{{artist.name}}</mat-card-title>
                 <mat-card-subtitle>{{artist.genre}}: {{artist.subgenre}}</mat-card-subtitle>
-                <button (click)="openUpdateArtistDialog(artist)">
-                    <mat-icon>settings</mat-icon>
-                </button>
+                <app-primary-button icon="settings" (btnClick)="openUpdateArtistDialog(artist)"></app-primary-button>
+                @if (authService.hasRequiredRoles(["ADMIN"])) {
+                <app-primary-button icon="delete" (btnClick)="deleteArtist(artist.id)"></app-primary-button>
+                }
             </mat-card-header>
             <mat-card-content class="!hidden md:!block">
                 <p>{{artist.bio}}</p>
@@ -65,5 +66,5 @@
     </div>
     }
 
-    
+
 </div>

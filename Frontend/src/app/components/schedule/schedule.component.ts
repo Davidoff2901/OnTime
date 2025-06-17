@@ -1,11 +1,11 @@
 import { Component, Inject, inject, OnInit, signal } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { Festival } from '../../models/models.type';
+import { Festival, Performances } from '../../models/models.type';
 import { MATERIAL_FORM_IMPORTS } from '../../helpers/material-imports';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatTimepickerModule } from '@angular/material/timepicker';
-import { provideNativeDateAdapter } from '@angular/material/core';
+import { provideNativeDateAdapter, DateAdapter } from '@angular/material/core';
 import { PerformancesService } from '../../services/performance.service';
 import { MatSelectModule } from '@angular/material/select';
 import { ArtistsService } from '../../services/artist.service';
@@ -29,15 +29,24 @@ export class ScheduleComponent implements OnInit {
   selectedStageId = signal<string | null>(null);
   selectedDate = signal<Date | null>(null);
   minEndTime = signal<Date | null>(null);
+  isEditMode: boolean = false;
+  performanceIdToUpdate: string | null = null;
 
-  minTime = new Date(0, 0, 0, 8, 0); // 8:00 AM
-  constructor(@Inject(MAT_DIALOG_DATA) public data: { festival: Festival }) {
+  private readonly _adapter = inject<DateAdapter<unknown, unknown>>(DateAdapter);
+
+  constructor(@Inject(MAT_DIALOG_DATA) public data: { festival: Festival, artistPerformance?: Performances }) {
     this.data.festival.start_date = new Date(this.data.festival.start_date);
     this.data.festival.end_date = new Date(this.data.festival.end_date);
 
+    this.isEditMode = !!data.artistPerformance
+
+    if (this.isEditMode && data.artistPerformance) {
+      this.performanceIdToUpdate = data.artistPerformance.id;
+    }
   }
 
   ngOnInit(): void {
+    this._adapter.setLocale('de-DE');
     this.performanceForm = this.fb.group({
       artistId: ['', Validators.required],
       festivalId: [this.data.festival.id, Validators.required],
@@ -46,6 +55,26 @@ export class ScheduleComponent implements OnInit {
       start_time: ['', Validators.required],
       end_time: ['', Validators.required]
     });
+    if (this.isEditMode && this.data.artistPerformance) {
+      const performance = this.data.artistPerformance;
+      this.performanceForm.patchValue({
+        artistId: performance.artistId,
+        stageId: performance.stageId,
+        day: new Date(performance.day),
+        start_time: new Date(performance.start_time),
+        end_time: new Date(performance.end_time)
+      });
+
+      this.selectedStageId.set(performance.stageId);
+      this.selectedDate.set(new Date(performance.day));
+
+      const initialStartTime = new Date(performance.start_time);
+      if (initialStartTime) {
+        const minDate = new Date(initialStartTime);
+        minDate.setMinutes(minDate.getMinutes() + 15);
+        this.minEndTime.set(minDate);
+      }
+    }
 
     this.pickerStartAt.set(this.data.festival.start_date);
 
@@ -77,7 +106,6 @@ export class ScheduleComponent implements OnInit {
     this.selectedDate.set(date);
   }
 
-
   festivalDateFilter = (d: Date | null): boolean => {
     const day = (d || new Date());
     const festival = this.data.festival;
@@ -94,7 +122,17 @@ export class ScheduleComponent implements OnInit {
 
   onSave(): void {
     if (this.performanceForm.valid) {
-      this.dialogRef.close(this.performanceForm.value);
+      const payload = { ...this.performanceForm.value };
+
+
+      if (this.isEditMode) {
+        this.dialogRef.close({
+          performanceId: this.performanceIdToUpdate,
+          data: payload
+        });
+      } else {
+        this.dialogRef.close(payload);
+      }
     }
   }
   onCancel(): void {

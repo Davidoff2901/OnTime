@@ -11,6 +11,8 @@ import { TicketsComponent } from './pages/tickets/tickets.component';
 import { ProfileComponent } from './pages/profile/profile.component';
 import { ForgotPasswordComponent } from './pages/forgot-password/forgot-password.component';
 import { ResetPasswordComponent } from './pages/reset-password/reset-password.component';
+import { UserFestivalsComponent } from './pages/user-festivals/user-festivals.component';
+import { FestivalComponent } from './pages/festival/festival.component';
 
 export const routes: Routes = [{
     path: "",
@@ -22,6 +24,20 @@ export const routes: Routes = [{
     pathMatch: 'full',
     canActivate: [authGuard],
     component: LineUpComponent,
+    data: { roles: ['USER', 'ORGANIZER', 'ADMIN'] }
+},
+{
+    path: "my-festivals",
+    pathMatch: 'full',
+    canActivate: [authGuard],
+    component: UserFestivalsComponent,
+    data: { roles: ['USER', 'ORGANIZER', 'ADMIN'] }
+},
+{
+    path: "my-festivals/:id",
+    pathMatch: 'full',
+    canActivate: [authGuard],
+    component: FestivalComponent,
     data: { roles: ['USER', 'ORGANIZER', 'ADMIN'] }
 
 },

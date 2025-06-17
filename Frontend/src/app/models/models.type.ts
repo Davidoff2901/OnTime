@@ -39,6 +39,7 @@ export type Performances = {
     day: Date
     start_time: Date
     end_time: Date
+    artist: Artist
 }
 
 export type TicketDTO = {
@@ -52,17 +53,24 @@ export type Ticket = {
     email?: string,
     festival?: { name: string, start_date: Date, end_date: Date }
 }
-
+export type LineupDTO = {
+    festivalId: string,
+    artistPerformanceId: string,
+    email: string
+}
 export type Lineup = {
     festival: {
         end_date: Date,
         start_date: Date,
         name: string,
         performances: {
+            start_time: Date,
+            end_time: Date,
             day: Date,
             artist: {
                 name: string,
                 genre: string
+                bio: string
             }
             stage: {
                 name: string

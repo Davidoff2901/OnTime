@@ -96,7 +96,6 @@ export class AuthService {
             const currentTime = Math.floor(Date.now() / 1000);
             return decoded.exp < currentTime;
         } catch (error) {
-            console.error("Error decoding token for expiry check:", error);
             return true;
         }
     }

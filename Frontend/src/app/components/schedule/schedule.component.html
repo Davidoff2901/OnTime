@@ -35,21 +35,23 @@
             <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
             <mat-datepicker #picker [startAt]="pickerStartAt()"></mat-datepicker>
         </mat-form-field>
-        <mat-form-field>
-            <mat-label>Start Time</mat-label>
-            <input matInput [matTimepicker]="timepicker" formControlName="start_time" required readonly />
-            <mat-timepicker-toggle matIconSuffix [for]="timepicker"></mat-timepicker-toggle>
-            <mat-timepicker #timepicker interval="15m"></mat-timepicker>
-            <mat-error>Choose Time</mat-error>
-        </mat-form-field>
-        <mat-form-field>
-            <mat-label>End Time</mat-label>
-            <input matInput [matTimepicker]="timepicker2" formControlName="end_time" [matTimepickerMin]="minEndTime()"
+        <div>
+            <mat-form-field class="w-36">
+                <mat-label>Start Time</mat-label>
+                <input matInput [matTimepicker]="timepicker" formControlName="start_time"  required readonly />
+                <mat-timepicker-toggle matIconSuffix [for]="timepicker" ></mat-timepicker-toggle>
+                <mat-timepicker #timepicker interval="15m" ></mat-timepicker>
+                <mat-error>Choose Time</mat-error>
+            </mat-form-field>
+            <mat-form-field class="w-36">
+                <mat-label>End Time</mat-label>
+                <input matInput [matTimepicker]="timepicker2" formControlName="end_time" [matTimepickerMin]="minEndTime()"
                 required readonly />
-            <mat-timepicker-toggle matIconSuffix [for]="timepicker2"></mat-timepicker-toggle>
-            <mat-timepicker interval="15m" #timepicker2></mat-timepicker>
-            <mat-error>Choose Time</mat-error>
-        </mat-form-field>
+                <mat-timepicker-toggle matIconSuffix [for]="timepicker2"></mat-timepicker-toggle>
+                <mat-timepicker interval="15m" #timepicker2></mat-timepicker>
+                <mat-error>Choose Time</mat-error>
+            </mat-form-field>
+        </div>
         <div>{{this.performanceService.error()}}</div>
     </form>
 </div>
@@ -62,6 +64,6 @@
     </button>
     <button mat-flat-button color="primary" (click)="onSave()" [disabled]="performanceForm.invalid"
         class="px-6 py-2 rounded-md shadow-md hover:shadow-lg transition duration-200 ease-in-out">
-        <!-- {{ isEditMode ? 'Update' : 'Create' }} -->
+        {{ isEditMode ? 'Update' : 'Create' }}
     </button>
 </div>
