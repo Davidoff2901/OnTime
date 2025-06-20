@@ -1,3 +1,13 @@
+@import "../../../styles/colors";
+
 .mat-expansion-panel-spacing{
     margin: 0px;
+}
+
+.neon{
+    color: black !important;
+    background-color: $neon !important;
+}
+.neon-txt{
+    color: $neon !important;
 }

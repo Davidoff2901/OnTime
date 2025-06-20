@@ -1,10 +1,11 @@
-import { Component, inject, OnInit, signal, ViewChild } from '@angular/core';
+import { Component, inject, OnInit, } from '@angular/core';
 import { MATERIAL_FORM_IMPORTS } from '../../helpers/material-imports';
 import { UserService } from '../../services/users.service';
-import { AbstractControl, FormBuilder, FormGroup, ReactiveFormsModule, ValidatorFn, Validators } from '@angular/forms';
+import {  FormBuilder, FormGroup, ReactiveFormsModule, ValidatorFn, Validators } from '@angular/forms';
 import { Subject, takeUntil } from 'rxjs';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { onInputChange, passwordsMatchValidator } from '../reset-password/reset-password.component';
+import { RouterLink } from '@angular/router';
 
 export function updatePasswordTooltip(password: string): string {
   const hasMinLength = password.length >= 6;
@@ -23,7 +24,7 @@ export function updatePasswordTooltip(password: string): string {
 
 @Component({
   selector: 'app-register',
-  imports: [MATERIAL_FORM_IMPORTS, ReactiveFormsModule, MatTooltipModule],
+  imports: [MATERIAL_FORM_IMPORTS, ReactiveFormsModule, MatTooltipModule, RouterLink],
   templateUrl: './register.component.html',
   styleUrl: './register.component.scss'
 })
@@ -37,8 +38,8 @@ export class RegisterComponent implements OnInit {
 
   constructor(private fb: FormBuilder) {
     this.registerForm = this.fb.group({
-      first_name: ['', Validators.required],
-      last_name: [''],
+      first_name: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(128)]],
+      last_name: ['', Validators.required, ],
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.pattern(/^(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{6,}$/)]],
       confirm_password: ['']

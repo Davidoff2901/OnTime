@@ -36,14 +36,14 @@
             <mat-datepicker #picker [startAt]="pickerStartAt()"></mat-datepicker>
         </mat-form-field>
         <div>
-            <mat-form-field class="w-36">
+            <mat-form-field class="w-36 md:w-52">
                 <mat-label>Start Time</mat-label>
                 <input matInput [matTimepicker]="timepicker" formControlName="start_time"  required readonly />
                 <mat-timepicker-toggle matIconSuffix [for]="timepicker" ></mat-timepicker-toggle>
                 <mat-timepicker #timepicker interval="15m" ></mat-timepicker>
                 <mat-error>Choose Time</mat-error>
             </mat-form-field>
-            <mat-form-field class="w-36">
+            <mat-form-field class="w-36 md:w-52">
                 <mat-label>End Time</mat-label>
                 <input matInput [matTimepicker]="timepicker2" formControlName="end_time" [matTimepickerMin]="minEndTime()"
                 required readonly />
@@ -58,11 +58,11 @@
 
 
 <div mat-dialog-actions class="flex justify-end gap-3 p-4 border-t border-gray-200">
-    <button mat-flat-button color="warn" (click)="onCancel()"
-        class="px-6 py-2 rounded-md shadow-md hover:shadow-lg transition duration-200 ease-in-out">
+    <button (click)="onCancel()"
+        class="px-6 py-2 rounded-md cursor-pointer shadow-md hover:shadow-lg transition duration-200 ease-in-out">
         Cancel
     </button>
-    <button mat-flat-button color="primary" (click)="onSave()" [disabled]="performanceForm.invalid"
+    <button mat-flat-button  (click)="onSave()" [disabled]="performanceForm.invalid"
         class="px-6 py-2 rounded-md shadow-md hover:shadow-lg transition duration-200 ease-in-out">
         {{ isEditMode ? 'Update' : 'Create' }}
     </button>

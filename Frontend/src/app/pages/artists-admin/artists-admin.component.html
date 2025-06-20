@@ -1,8 +1,8 @@
-<div class="container mx-auto p-5 ">
-    <div class="flex justify-between items-center mb-8">
-        <h1 class="text-4xl font-extrabold text-gray-900 leading-tight">Artist Manager</h1>
+<div class="container mx-auto">
+    <div class="flex justify-between items-center py-10 pl-10">
+        <h1 class="text-4xl font-extrabold leading-tight">Artist Manager</h1>
         <button mat-flat-button (click)="openCreateArtistDialog()"
-            class="!bg-green-600 hover:!bg-green-700 text-white font-semibold py-3 px-6 rounded-lg shadow-lg transform hover:scale-105 transition duration-300 ease-in-out">
+            class=" neon font-semibold py-3 px-6 rounded-lg shadow-lg transform hover:scale-105 transition duration-300 ease-in-out">
             <mat-icon class="mr-2">add_circle</mat-icon> Create New Artist
         </button>
     </div>
@@ -48,15 +48,18 @@
     <div class="grid grid-cols-3 gap-5 overflow-auto max-h-[80vh]">
         @for (artist of filteredArtists(); track $index) {
         <mat-card>
-            <mat-card-header>
-                <mat-card-title>{{artist.name}}</mat-card-title>
-                <mat-card-subtitle>{{artist.genre}}: {{artist.subgenre}}</mat-card-subtitle>
-                <app-primary-button icon="settings" (btnClick)="openUpdateArtistDialog(artist)"></app-primary-button>
-                @if (authService.hasRequiredRoles(["ADMIN"])) {
-                <app-primary-button icon="delete" (btnClick)="deleteArtist(artist.id)"></app-primary-button>
-                }
+            <mat-card-header class="flex justify-between">
+                <mat-card-title class="!text-2xl neon-txt">{{artist.name}}</mat-card-title>
+                <mat-card-subtitle >{{artist.genre}}: {{artist.subgenre}}</mat-card-subtitle>
+                <div>
+                    <app-primary-button icon="settings"
+                        (btnClick)="openUpdateArtistDialog(artist)"></app-primary-button>
+                    @if (authService.hasRequiredRoles(["ADMIN"])) {
+                    <app-primary-button icon="delete" (btnClick)="deleteArtist(artist.id)"></app-primary-button>
+                    }
+                </div>
             </mat-card-header>
-            <mat-card-content class="!hidden md:!block">
+            <mat-card-content class="!hidden md:!block m-5">
                 <p>{{artist.bio}}</p>
             </mat-card-content>
             <mat-card-actions>

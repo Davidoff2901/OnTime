@@ -13,11 +13,12 @@ import { ForgotPasswordComponent } from './pages/forgot-password/forgot-password
 import { ResetPasswordComponent } from './pages/reset-password/reset-password.component';
 import { UserFestivalsComponent } from './pages/user-festivals/user-festivals.component';
 import { FestivalComponent } from './pages/festival/festival.component';
+import { AdminComponent } from './pages/admin/admin.component';
 
 export const routes: Routes = [{
     path: "",
     pathMatch: 'full',
-    component: HomeComponent
+    component: LoginComponent
 },
 {
     path: "lineup",
@@ -76,6 +77,13 @@ export const routes: Routes = [{
     canActivate: [authGuard],
     component: ArtistsAdminComponent,
     data: { roles: ['ORGANIZER', 'ADMIN'] }
+},
+{
+    path: "admin",
+    pathMatch: 'full',
+    canActivate: [authGuard],
+    component: AdminComponent,
+    data: { roles: ['ADMIN'] }
 },
 {
     path: "tickets",

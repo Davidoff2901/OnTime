@@ -1,16 +1,16 @@
-<div>
-    <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class=" grid justify-items-center">
-        <mat-form-field class="full-width">
+<div class="container mx-auto h-[80vh] flex flex-col justify-center items-center ">
+    <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="grid p-6 rounded-lg bg">
+        <mat-form-field class="full-width h-20">
             <mat-label>First Name</mat-label>
             <input matInput formControlName="first_name" required />
             <mat-error>First Name is required</mat-error>
         </mat-form-field>
-        <mat-form-field class="full-width">
+        <mat-form-field class="full-width h-20">
             <mat-label>Last Name</mat-label>
             <input matInput formControlName="last_name" required />
             <mat-error>Last Name is required</mat-error>
         </mat-form-field>
-        <mat-form-field class="full-width">
+        <mat-form-field class="full-width h-20">
             <mat-label>Email</mat-label>
             <input matInput formControlName="email" type="email" required />
             @if (registerForm.get('email')?.hasError('required') && registerForm.get('email')?.touched) {
@@ -20,7 +20,7 @@
             <mat-error>Email is not valid</mat-error>
             }
         </mat-form-field>
-        <mat-form-field class="full-width">
+        <mat-form-field class="full-width h-20">
             <mat-label>Password</mat-label>
             <input #passwordInput matInput formControlName="password" type="password" required
                 (input)="onPasswordInputChange()" />
@@ -35,20 +35,21 @@
             {{ passwordTooltipMessage }}
         </div>
         }
-        <mat-form-field class="full-width">
+        <mat-form-field class="full-width h-20">
             <mat-label>Confirm Password</mat-label>
             <input matInput formControlName="confirm_password" type="password" required />
             @if (registerForm.get('confirm_password')?.hasError('passwordsMismatch') &&
             registerForm.get('confirm_password')?.touched) {
             <mat-error>Passwords do not match</mat-error>
             }
-
-
         </mat-form-field>
 
-        <button mat-raised-button color="primary" type="submit" [disabled]="!registerForm.valid">
-            Create Festival
+        <button mat-raised-button type="submit" [disabled]="!registerForm.valid">
+            Register
         </button>
         <div>{{this.userService.error()}}</div>
+        <div class="pt-4">
+            Already have an account? Click <a class="font-bold" [routerLink]="['/login']">here</a>
+        </div>
     </form>
 </div>

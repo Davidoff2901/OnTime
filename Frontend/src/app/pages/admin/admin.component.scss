@@ -1,0 +1,27 @@
+@import "../../../styles/colors";
+
+::ng-deep .mat-mdc-table {
+    background-color: transparent !important;
+}
+
+::ng-deep .mat-mdc-header-row {
+    color: white !important;
+    font-weight: 900 !important;
+    font-size: medium !important;
+}
+
+::ng-deep .mat-mdc-row {
+    color: white !important;
+}
+
+::ng-deep .mat-mdc-paginator {
+    color: $neon !important;
+    background-color: transparent !important;
+}
+
+::ng-deep .mat-mdc-icon-button[aria-disabled] .mat-mdc-paginator-icon {
+    fill: $neon !important; 
+}
+::ng-deep .mat-mdc-icon-button{
+    background-color: rgb(69, 69, 69) !important;
+}

@@ -35,6 +35,8 @@ export async function findFestivalsByTicket(email: string) {
                     id: true, name: true, start_date: true, end_date: true, performances: {
                         select: {
                             day: true,
+                            start_time: true,
+                            end_time: true,
                             artist: { select: { name: true, genre: true } },
                             stage: { select: { name: true } }
                         }

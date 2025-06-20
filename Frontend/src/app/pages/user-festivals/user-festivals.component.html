@@ -17,18 +17,22 @@
                     {{item.festival.end_date | date: 'd MMMM y' }}
                 </mat-panel-title>
             </mat-expansion-panel-header>
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+            <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
                 @for (item of item.festival.performances.slice(0,8); track $index) {
                 <mat-card>
-                    <mat-card-header class="text-xl">
-                        {{item.artist.name}}
+                    <mat-card-header class="text-xl flex flex-col">
+                        <div class="neon">{{item.artist.name}}</div>
+                        <div class="text-[12px]">
+                            {{item.start_time | formatTime}} - {{item.end_time | formatTime}}
+                        </div>
+                        <div>{{item.stage.name}}</div>
                     </mat-card-header>
                     <mat-card-content>
                     </mat-card-content>
                 </mat-card>
                 }
             </div>
-            <app-primary-button label="Open" [routerLink]="'/my-festivals/'+ item.festival.id"></app-primary-button>
+            <app-primary-button label="Open" class="" [routerLink]="'/my-festivals/'+ item.festival.id"></app-primary-button>
         </mat-expansion-panel>
         }
     </mat-accordion>

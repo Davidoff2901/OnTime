@@ -9,6 +9,6 @@ router.get('/', authenticateJWT, authorizeRoles('USER', 'ORGANIZER', 'ADMIN'), g
 router.post('/', authenticateJWT, authorizeRoles('ORGANIZER', 'ADMIN'), createArtist)
 router.get('/:id', authenticateJWT, authorizeRoles('USER', 'ORGANIZER', 'ADMIN'), getArtistById)
 router.put('/:id', authenticateJWT, authorizeRoles('ORGANIZER', 'ADMIN'), updateArtist)
-router.delete('/:id', authenticateJWT, authorizeRoles('ORGANIZER', 'ADMIN'), deleteArtist)
+router.delete('/:id', authenticateJWT, authorizeRoles('ADMIN'), deleteArtist)
 
 export default router;

@@ -91,7 +91,7 @@ export async function resetPassword(req: Request, res: Response, next: NextFunct
 
 export async function deleteUser(req: Request, res: Response, next: NextFunction) {
     try {
-        await userService.deleteUserById(req.params.id);
+        await userService.deleteUserByEmail(req.params.email);
         res.status(204).send();
     } catch (err) {
         next(err)

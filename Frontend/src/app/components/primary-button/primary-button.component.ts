@@ -12,6 +12,7 @@ export class PrimaryButtonComponent {
   label = input('')
   link = input('')
   icon = input()
+  color = input()
   btnClick = output()
 
 }

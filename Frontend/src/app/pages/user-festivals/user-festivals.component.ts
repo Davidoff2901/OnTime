@@ -9,10 +9,12 @@ import { MatExpansionModule } from '@angular/material/expansion';
 import { MatDividerModule } from '@angular/material/divider';
 import { RouterLink } from '@angular/router';
 import { PrimaryButtonComponent } from '../../components/primary-button/primary-button.component';
+import { FormatTimePipe } from '../../helpers/formatters.pipe';
 
 @Component({
   selector: 'app-user-festivals',
-  imports: [MATERIAL_FORM_IMPORTS, MatCardModule, CommonModule, MatExpansionModule, MatDividerModule, RouterLink, PrimaryButtonComponent],
+  imports: [MATERIAL_FORM_IMPORTS, MatCardModule, CommonModule, FormatTimePipe,
+    MatExpansionModule, MatDividerModule, RouterLink, PrimaryButtonComponent],
   templateUrl: './user-festivals.component.html',
   styleUrl: './user-festivals.component.scss'
 })

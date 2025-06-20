@@ -1,9 +1,18 @@
-<div class="festival-detail-container" *ngIf="festival">
-    <mat-card class="festival-header mat-elevation-z4">
+<div class="container mx-auto" *ngIf="festival">
+    <mat-card class="pb-4 ">
         <mat-card-header>
-            <mat-card-title>{{ festival.name }}</mat-card-title>
+            <mat-card-title>
+                <div class="text-2xl neon">
+                    {{ festival.name }}
+                </div>
+                <div class="text-sm ">
+                    {{ festival.start_date | formatDate }} - {{ festival.end_date| formatDate }}
+                </div>
+            </mat-card-title>
             <mat-card-subtitle>
-                {{ festival.address }} | {{ festival.start_date | formatDate }} - {{ festival.end_date| formatDate }}
+                <div class="text-sm pt-4">
+                    {{ festival.address }}
+                </div>
             </mat-card-subtitle>
         </mat-card-header>
     </mat-card>
@@ -32,17 +41,17 @@
     </div>
 
     <mat-tab-group mat-stretch-tabs="false" mat-align-tabs="center" (selectedTabChange)="onTabChange($event)"
-        class="festival-tabs" *ngIf="festival.stages && festival.stages.length > 0">
-        <mat-tab *ngFor="let stage of festival.stages" [label]="stage.name">
-            <div class="performances-list">
+        *ngIf="festival.stages && festival.stages.length > 0">
+        <mat-tab *ngFor="let stage of festival.stages" [label]="stage.name" class="neon">
+            <div class="grid grid-cols-3 gap-4">
                 <h3 *ngIf="performances.length === 0" class="no-performances-message">
                     No performances found for this stage with the current filters.
                 </h3>
                 <mat-card *ngFor="let performance of performances" class="performance-card mat-elevation-z1">
                     <mat-card-content>
                         <div class="performance-details">
-                            <div class="artist-name">{{ performance.artist.name }}</div>
-                            <div class="performance-time">
+                            <div class="neon">{{ performance.artist.name }}</div>
+                            <div class="text-[12px]">
                                 {{ performance.start_time | formatTime }} - {{ performance.end_time | formatTime }} on
                                 {{ performance.day | formatDate }}
                             </div>

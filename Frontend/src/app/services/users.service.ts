@@ -9,11 +9,16 @@ import { User } from '../models/models.type';
 })
 export class UserService {
     private apiUrl = 'http://localhost:1234/api/users';
+    users = signal<User[]>([]);
+
     http = inject(HttpClient)
     error = signal<string | null>(null);
 
     constructor() { }
 
+    getAllUsers(): Observable<User[]> {
+        return this.http.get<User[]>(`${this.apiUrl}`)
+    }
     createUser(user: User): Observable<User> {
         return this.http.post<User>(`${this.apiUrl}/register`, user)
     }
@@ -28,5 +33,8 @@ export class UserService {
     }
     resetPassword(token: string, new_password: string): Observable<any> {
         return this.http.put(`${this.apiUrl}/reset-password?token=${token}`, { new_password });
+    }
+    deleteUser(email: string): Observable<User> {
+        return this.http.delete<User>(`${this.apiUrl}/${email}`)
     }
 }

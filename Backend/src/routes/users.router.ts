@@ -10,11 +10,11 @@ router.post('/register', createUser)
 router.post('/login', login)
 router.post('/forgot-password', forgotPassword);
 router.put('/reset-password', resetPassword);
-router.put('/change-password', changePassword);
+router.put('/change-password', authenticateJWT, changePassword);
 
-router.get('/', getAllUsers)
+router.get('/', authenticateJWT, getAllUsers)
 router.get('/:id', authenticateJWT, authorizeRoles('ADMIN'), getUserByID)
 router.put('/:email', authenticateJWT, authorizeRoles('USER', 'ADMIN', 'ORGANIZER'), updateUser)
-router.delete('/:id', authenticateJWT, authorizeRoles('ADMIN'), deleteUser)
+router.delete('/:email', authenticateJWT, authorizeRoles('ADMIN'), deleteUser)
 
 export default router;

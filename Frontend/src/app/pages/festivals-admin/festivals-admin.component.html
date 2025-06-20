@@ -2,7 +2,7 @@
     <div class="flex justify-between items-center py-10 pl-10">
         <h1 class="text-4xl font-extrabold  ">Festival Manager</h1>
         <button mat-flat-button (click)="openCreateFestivalDialog()"
-            class="!bg-green-600 hover:!bg-green-700 text-white font-semibold py-3 px-6 rounded-lg shadow-lg transform hover:scale-105 transition duration-300 ease-in-out">
+            class="neon font-semibold py-3 px-6 rounded-lg shadow-lg transform hover:scale-105 transition duration-300 ease-in-out">
             <mat-icon class="mr-2">add_circle</mat-icon> Create New Festival
         </button>
     </div>
@@ -17,25 +17,25 @@
         @for (festival of festivalsService.festivals(); track $index) {
         <div class="grid grid-cols-12 pb-5 ">
             <mat-expansion-panel class="col-span-10 ">
-                <mat-expansion-panel-header class="!h-20">
+                <mat-expansion-panel-header class="!h-25">
                     <mat-panel-title>
                         {{festival.name}} |
                         {{festival.start_date | date: 'd' }} - {{festival.end_date | date: 'd MMMM y' }}
                     </mat-panel-title>
                     <mat-panel-description class="!hidden md:!block">
-                        <mat-icon class="align-middle text-blue-600 mr-1">location_on</mat-icon>
+                        <mat-icon class="align-middle mr-1">location_on</mat-icon>
                         {{festival.address }}
                     </mat-panel-description>
                 </mat-expansion-panel-header>
                 @if (festival.stages?.length === 0) {
                 <div>No stages for this festival</div>
-                <button mat-raised-button color="primary" class="col-span-2" (click)="openAddStageDialog(festival.id)">
+                <button mat-raised-button (click)="openAddStageDialog(festival.id)">
                     <mat-icon class="mr-2">add_circle</mat-icon> Add Stage
                 </button>
                 }
                 @else {
                 <div class="grid grid-cols-12 gap-4">
-                    <div class="col-span-3">
+                    <div class="col-span-3 grid gap-4">
                         @for (stage of festival.stages; track $index) {
                         <mat-card
                             class=" items-center rounded-xl shadow-xl hover:shadow-2xl transform hover:-translate-y-1 transition duration-300 ease-in-out flex flex-col">
@@ -43,50 +43,43 @@
                                 <mat-card-title class="!font-bold">{{ stage.name }}</mat-card-title>
                             </mat-card-header>
                             <mat-card-actions>
-                                <button mat-raised-button color="primary" class="col-span-2"
-                                    (click)="openUpdateStageDialog(stage)">
-                                    Change
-                                </button>
-
+                                <app-primary-button class="col-span-2" color="white" icon="settings"
+                                    (btnClick)="openUpdateStageDialog(stage)"></app-primary-button>
+                                <app-primary-button class="col-span-2" color="red" icon="delete_forever"
+                                    (btnClick)="deleteStage(stage.id)"></app-primary-button>
                             </mat-card-actions>
-                            <button color="primary" class="col-span-2" (click)="deleteStage(stage.id)">
-                                <mat-icon class="mr-2">delete_forever</mat-icon>
-                            </button>
                         </mat-card>
                         }
                     </div>
-                    <div class="col-span-9 grid grid-cols-2 md:grid-cols-4 gap-3">
+                    <div class="col-span-9 grid grid-cols-1 md:grid-cols-3 gap-3">
                         @for (performance of festival.performances; track $index) {
                         <mat-card
                             class=" items-center rounded-xl shadow-xl hover:shadow-2xl transform hover:-translate-y-1 transition duration-300 ease-in-out flex flex-col">
                             <mat-card-header>
-                                <mat-card-title class="!font-bold">{{ performance.artist.name }}</mat-card-title>
+                                <mat-card-title class="!font-bold neon-txt">{{ performance.artist.name
+                                    }}</mat-card-title>
                             </mat-card-header>
                             <mat-card-content>
                                 <div>{{performance.day | formatDate}}</div>
                                 {{performance.start_time | formatTime}} - {{performance.end_time | formatTime}}
                             </mat-card-content>
                             <mat-card-actions>
-                                <button mat-raised-button color="primary" class="col-span-2"
-                                    (click)="openUpdateScheduleDialog(performance, festival)">
-                                    Change
-                                </button>
-
+                                <app-primary-button class="col-span-2" color="white" icon="settings"
+                                    (btnClick)="openUpdateScheduleDialog(performance, festival)"></app-primary-button>
+                                <app-primary-button class="col-span-2" color="red" icon="delete_forever"
+                                    (btnClick)="deletePerformance(performance.id)"></app-primary-button>
                             </mat-card-actions>
-                            <button color="primary" class="col-span-2" (click)="deletePerformance(performance.id)">
-                                <mat-icon class="mr-2">delete_forever</mat-icon>
-                            </button>
                         </mat-card>
                         }
                     </div>
                 </div>
-                <button mat-raised-button color="primary" class="col-span-2" (click)="openAddStageDialog(festival.id)">
-                    <mat-icon class="mr-2">add_circle</mat-icon> Add Stage
+                <button mat-raised-button class="py-5" (click)="openAddStageDialog(festival.id)">
+                    <mat-icon>add_circle</mat-icon> Add Stage
                 </button>
                 }
 
             </mat-expansion-panel>
-            <div class="flex flex-col gap-3 w-24">
+            <div class="flex flex-col gap-3 w-24 pl-4">
                 <app-primary-button label="Change" class="col-span-2" (btnClick)="openUpdateFestivalDialog(festival)">
                 </app-primary-button>
                 <app-primary-button label="Schedule" class="col-span-2" (btnClick)="openScheduleDialog(festival)">

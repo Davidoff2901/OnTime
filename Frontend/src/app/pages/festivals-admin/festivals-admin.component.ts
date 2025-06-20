@@ -42,6 +42,7 @@ export class FestivalsAdminComponent implements OnInit {
   loadFestivals() {
     this.festivalsService.getFestivalsByOrganizer(this.authService.getEmail()!).subscribe({
       next: res => {
+        console.log(res)
         this.festivalsService.festivals.set(res)
       },
       error: err => {

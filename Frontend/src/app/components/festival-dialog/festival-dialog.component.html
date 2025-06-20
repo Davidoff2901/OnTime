@@ -2,7 +2,7 @@
     {{ isEditMode ? 'Update Festival' : 'Create New Festival' }}
 </h1>
 
-<div mat-dialog-content >
+<div mat-dialog-content>
     <form [formGroup]="festivalForm" class="grid grid-cols-1 md:grid-cols-2 gap-2">
         <mat-form-field>
             <mat-label>Festival Name</mat-label>
@@ -46,12 +46,17 @@
             <mat-error>
                 Longitude is required.
             </mat-error>
-
         </mat-form-field>
-
+        <mat-form-field class="w-full">
+            <mat-label>Address</mat-label>
+            <input matInput formControlName="address" >
+            <mat-error>
+                Address is required.
+            </mat-error>
+        </mat-form-field>
     </form>
     <div class="w-full h-30vh mt-4">
-        <label class="block text-gray-700 text-sm font-bold mb-2">
+        <label class="block  text-sm font-bold mb-2">
             Click on the map to select Latitude & Longitude:
         </label>
         <div id="festivalMap" class="w-full h-[30vh] rounded-lg shadow-inner border border-gray-300"></div>
@@ -59,11 +64,11 @@
 </div>
 
 <div mat-dialog-actions class="flex justify-end gap-3  border-t border-gray-200">
-    <button mat-flat-button color="warn" (click)="onCancel()"
-        class="px-6 py-2 rounded-md shadow-md hover:shadow-lg transition duration-200 ease-in-out">
+    <button  (click)="onCancel()"
+        class="px-6 py-2 rounded-md cursor-pointer shadow-md hover:shadow-lg transition duration-200 ease-in-out">
         Cancel
     </button>
-    <button mat-flat-button color="primary" (click)="onSave()" [disabled]="festivalForm.invalid"
+    <button mat-flat-button (click)="onSave()" [disabled]="festivalForm.invalid"
         class="px-6 py-2 rounded-md shadow-md hover:shadow-lg transition duration-200 ease-in-out">
         {{ isEditMode ? 'Update' : 'Create' }}
     </button>

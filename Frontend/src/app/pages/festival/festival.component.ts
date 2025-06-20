@@ -147,6 +147,10 @@ export class FestivalComponent implements OnInit {
     }
     this.lineupService.addToLineup(payload).subscribe({
       next: res => {
+        this.snackBar.open(`Artist added to lineup`, 'Close', { duration: 4000 });
+      },
+      error: err =>{
+        this.snackBar.open(err.error.message, 'Close', { duration: 4000 });
 
       }
     })
@@ -160,6 +164,5 @@ export class FestivalComponent implements OnInit {
   clearDayFilter(): void {
     this.filterForm.controls.day.setValue(null);
   }
-
 
 }

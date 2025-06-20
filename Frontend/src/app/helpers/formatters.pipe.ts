@@ -7,7 +7,7 @@ import moment from 'moment';
 })
 export class FormatTimePipe implements PipeTransform {
   transform(value: Date | string): string {
-    return moment(value).format('hh:mm');
+    return moment(value).format('HH:mm');
   }
 }
 

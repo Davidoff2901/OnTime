@@ -52,9 +52,7 @@ export async function createUser(data: { first_name: string, last_name: string, 
             } else if (target.includes('phone')) {
                 throw new HttpError(409, 'Phone number already used');
             }
-
         }
-
         throw new HttpError(500, 'Failed to create user');
     }
 };
@@ -260,10 +258,20 @@ export async function resetPassword(token: string, new_password: string) {
     return { success: true, message: 'Password has been reset successfully.' };
 }
 
-export async function deleteUserById(id: string) {
-    await getByIdOrThrowError('users', id, "User not found")
+export async function deleteUserByEmail(email: string) {
     try {
-        return await db.users.delete({ where: { id } });
+        const user = await db.users.findUnique({
+            where: { email },
+            select: {
+                id: true
+            }
+        })
+
+        if (!user) {
+            throw new HttpError(404, "User not found")
+        }
+
+        return await db.users.delete({ where: { id: user.id } });
     } catch {
         throw new HttpError(500, 'Failed to delete user');
     }

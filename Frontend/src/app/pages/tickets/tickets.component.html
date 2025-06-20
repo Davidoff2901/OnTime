@@ -1,7 +1,7 @@
 <div>
     <div>{{this.ticketsService.error()}}</div>
 
-    <div class="grid grid-cols-3 justify-items-center">
+    <div class="grid md:grid-cols-3 gap-4 justify-items-center">
         @for (item of festivalsService.festivals(); track $index) {
         <mat-card class="w-[80%] items-center ">
             <mat-card-header>
@@ -9,6 +9,7 @@
             </mat-card-header>
             <mat-card-content>
                 <div>{{item.start_date | date: 'd ' }} - {{item.end_date | date: 'd MMMM y'}}</div>
+                <div>Price: {{getAsciiSum(item.name)}}$</div>
             </mat-card-content>
             <mat-card-actions>
                 <button mat-raised-button color="primary" (click)="purchase(item.id)">

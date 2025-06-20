@@ -1,3 +1,14 @@
+@import "../../../styles/colors";
 .cdk-overlay-pane.mat-mdc-dialog-panel{
     min-width: none;
+}
+
+::ng-deep .mat-mdc-unelevated-button[disabled], .mat-mdc-unelevated-button.mat-mdc-button-disabled{
+    color: rgb(71, 71, 71) !important;
+    background-color: gray !important;
+}
+
+::ng-deep .mat-mdc-unelevated-button:not(:disabled){
+    color: black !important;
+    background-color: $neon;
 }

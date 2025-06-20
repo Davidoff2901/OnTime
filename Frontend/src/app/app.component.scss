@@ -9,8 +9,9 @@
   min-width: 0 !important;
   max-height: 80vh !important;
 }
-::ng-deep .mat-mdc-dialog-container{
-  background-color: rgba(30, 30, 30, 0.8);
+
+::ng-deep .mat-mdc-dialog-container {
+  background-color: rgba(30, 30, 30, 0.95);
 }
 
 ::ng-deep .mat-mdc-card {
@@ -30,11 +31,21 @@
 ::ng-deep .mat-expansion-panel-header-title {
   color: white !important;
 }
+::ng-deep .mat-expansion-panel-header-description{
+  color: rgb(165, 165, 165) !important;
+}
+
+
 
 ::ng-deep .mat-mdc-raised-button:not(:disabled) {
   color: white !important;
   background: linear-gradient(237.87deg, $purple 0%, $pink 100%);
   background-color: transparent !important;
+}
+
+::ng-deep .mat-mdc-raised-button[disabled],
+.mat-mdc-raised-button.mat-mdc-button-disabled {
+  background-color: gray !important;
 }
 
 ::ng-deep .mdc-text-field--filled:not(.mdc-text-field--disabled) {
@@ -44,13 +55,27 @@
 ::ng-deep .mdc-text-field--filled:not(.mdc-text-field--disabled) .mdc-floating-label {
   color: white !important;
 }
-::ng-deep .mat-mdc-form-field-icon-suffix, .mat-datepicker-toggle, .mat-mdc-icon-button{
-  color:white !important
+
+::ng-deep .mat-datepicker-toggle{
+  color: white !important
 }
-::ng-deep .mdc-text-field--filled:not(.mdc-text-field--disabled) .mdc-text-field__input{
+::ng-deep .mat-mdc-icon-button{
+  color: white !important;
+}
+::ng-deep .mat-mdc-select{
+  color: white !important;
+}
+
+::ng-deep .mat-mdc-form-field-icon-suffix,
+.mat-datepicker-toggle,
+.mat-mdc-icon-button {
   color: white !important
 }
 
-::ng-deep .mat-mdc-dialog-surface{
+::ng-deep .mdc-text-field--filled:not(.mdc-text-field--disabled) .mdc-text-field__input {
+  color: white !important
+}
+
+::ng-deep .mat-mdc-dialog-surface {
   background-color: transparent !important;
 }

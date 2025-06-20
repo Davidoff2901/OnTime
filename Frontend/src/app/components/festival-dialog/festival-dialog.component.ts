@@ -36,7 +36,7 @@ export class FestivalDialogComponent implements OnInit {
     this.festivalId = data.festival?.id
 
     this.festivalForm = this.fb.group({
-      name: [data.festival?.name, Validators.required],
+      name: [data.festival?.name, [Validators.required, Validators.maxLength(128)]],
       latitude: [data.festival?.latitude, [Validators.required, Validators.min(-90), Validators.max(90)]],
       longitude: [data.festival?.longitude, [Validators.required, Validators.min(-180), Validators.max(180)]],
       address: [data.festival?.address || ''],

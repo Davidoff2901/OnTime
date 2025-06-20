@@ -32,8 +32,6 @@ export class ArtistDialogComponent implements OnInit {
       subgenre: [{ value: data.artist?.subgenre, disabled: !this.isEditMode }, Validators.required],
       bio: [data.artist?.bio, Validators.required],
     });
-
-
   }
 
   ngOnInit(): void {
