@@ -16,19 +16,21 @@ datasource db {
 enum Role {
   USER
   ADMIN
-  ORANIZER
+  ORGANIZER
 }
 
 model Users {
-  id           String    @id @default(uuid())
-  first_name   String
-  last_name    String
-  password     String
-  email        String    @unique
-  birthday     DateTime?
-  phone        String?   @unique
-  country_code String?
-  updated_at   DateTime  @default(now()) @updatedAt
+  id                   String    @id @default(uuid())
+  first_name           String
+  last_name            String
+  password             String
+  email                String    @unique
+  passwordResetToken   String?   @unique
+  passwordResetExpires DateTime?
+  birthday             DateTime?
+  phone                String?   @unique
+  country_code         String?
+  updated_at           DateTime  @default(now()) @updatedAt
 
   role        Role         @default(USER)
   festivals   Festivals[]  @relation("OrganizedFestivals")
@@ -43,14 +45,16 @@ model Festivals {
   name        String   @unique
   longitude   Float
   latitude    Float
+  address     String
   created_at  DateTime @default(now())
   updated_at  DateTime @default(now()) @updatedAt
   start_date  DateTime
   end_date    DateTime
 
-  stages      Stages[]
-  tickets     Tickets[]
-  userLineups UserLineup[]
+  stages       Stages[]
+  tickets      Tickets[]
+  userLineups  UserLineup[]
+  performances ArtistPerformance[]
 }
 
 model Stages {
@@ -65,51 +69,53 @@ model Stages {
 }
 
 model ArtistPerformance {
+  id         String       @id @default(uuid())
   artistId   String
-  artist     Artists  @relation(fields: [artistId], references: [id])
+  artist     Artists      @relation(fields: [artistId], references: [id])
   stageId    String
-  stage      Stages   @relation(fields: [stageId], references: [id])
-  created_at DateTime @default(now())
+  stage      Stages       @relation(fields: [stageId], references: [id])
+  festivalId String
+  festival   Festivals    @relation(fields: [festivalId], references: [id])
+  created_at DateTime     @default(now())
   day        DateTime
   start_time DateTime
   end_time   DateTime
+  UserLineup UserLineup[]
 
-  @@id([artistId, stageId, day]) // Composite PK if performances are unique by artist/stage/day
+  @@unique([stageId, day, start_time, end_time], name: "unique_stage_performance_slot")
+  @@unique([artistId, festivalId, stageId, day, start_time, end_time], name: "unique_artist_performance_slot")
 }
 
 model Artists {
   id         String   @id @default(uuid())
   name       String   @unique
   genre      String
+  subgenre   String?
+  bio        String
   updated_at DateTime @updatedAt
 
   performances ArtistPerformance[]
-  lineupItems  UserLineupItem[]
 }
 
 model UserLineup {
-  id         String    @id @default(uuid())
-  userId     String
-  user       Users     @relation(fields: [userId], references: [id])
-  festivalId String
-  festival   Festivals @relation(fields: [festivalId], references: [id])
+  id                  String            @id @default(uuid())
+  userId              String
+  user                Users             @relation(fields: [userId], references: [id])
+  festivalId          String
+  festival            Festivals         @relation(fields: [festivalId], references: [id])
+  artistPerformanceId String
+  artistPerformance   ArtistPerformance @relation(fields: [artistPerformanceId], references: [id])
 
-  items UserLineupItem[]
-}
-
-model UserLineupItem {
-  userLineupId String
-  lineup       UserLineup @relation(fields: [userLineupId], references: [id])
-  artistsId    String
-  artist       Artists    @relation(fields: [artistsId], references: [id])
-
-  @@id([userLineupId, artistsId])
+  @@unique([userId, artistPerformanceId])
 }
 
 model Tickets {
   id         String    @id @default(uuid())
-  userId     String
-  user       Users     @relation(fields: [userId], references: [id])
+  userId     String?
+  user       Users?    @relation(fields: [userId], references: [id])
   festivalId String
   festival   Festivals @relation(fields: [festivalId], references: [id])
+  purchased  DateTime  @default(now())
+
+  @@unique([festivalId, userId])
 }

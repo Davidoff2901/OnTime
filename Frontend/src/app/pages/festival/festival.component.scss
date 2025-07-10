@@ -1,0 +1,15 @@
+@import "../../../styles/colors";
+
+.neon {
+    color: $neon !important;
+}
+
+.mat-mdc-tab-group { 
+  --mat-tab-header-active-indicator-color: #FF0000; 
+
+  --mat-tab-header-active-label-text-color: #F1FF55; 
+
+  --mat-tab-header-inactive-label-text-color: #959595; 
+
+
+}

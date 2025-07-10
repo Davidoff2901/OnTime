@@ -1,0 +1,10 @@
+@import "../../../styles/colors";
+
+.neon {
+    color: black !important;
+    background-color: $neon !important;
+}
+
+.neon-txt{
+    color: $neon;
+}

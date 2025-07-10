@@ -32,7 +32,7 @@ export function authenticateJWT(req: AuthenticatedRequest, res: Response, next: 
 
   try {
     const decoded = verifyJWT(token)
-    req.user = decoded.filtered;
+    req.user = decoded;
     next();
   } catch (err) {
     throw new HttpError(401, 'Unauthorized: Invalid token')
@@ -41,7 +41,7 @@ export function authenticateJWT(req: AuthenticatedRequest, res: Response, next: 
 
 export function authorizeRoles(...allowedRoles: string[]) {
   return (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
-    if (!req.user || !allowedRoles.includes(req.user.role)) {
+    if (!req.user || !allowedRoles.includes(req.user.role)) { 
       throw new HttpError(403, 'Forbidden: Insufficient permissions')
     }
     next();

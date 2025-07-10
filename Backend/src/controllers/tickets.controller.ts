@@ -1,46 +1,46 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import * as ticketsService from '../services/tickets.service'
-import { handleError } from "../helpers/httpError";
 
-export async function getAllTickets(req: Request, res: Response) {
+export async function getAllTickets(req: Request, res: Response, next: NextFunction) {
     try {
         const tickets = await ticketsService.findAll();
         res.json(tickets);
     } catch (err) {
-        res.status(500).json({ message: 'Failed to fetch tickets' });
+        next(err)
     }
 };
-export async function getTicketById(req: Request, res: Response) {
+export async function getTicketById(req: Request, res: Response, next: NextFunction) {
     try {
         const ticket = await ticketsService.findById(req.params.id);
         res.json(ticket);
     } catch (err) {
-        handleError(res, err);
+        next(err)
     }
 };
 
-export async function createTicket(req: Request, res: Response) {
+export async function getFestivalsByTicket(req: Request, res: Response, next: NextFunction) {
     try {
-        const ticket = await ticketsService.create(req.body);
-        res.status(201).json(ticket);
+        const ticket = await ticketsService.findFestivalsByTicket(req.params.email);
+        res.json(ticket);
     } catch (err) {
-        handleError(res, err);
+        next(err)
     }
 };
 
-// export async function updateTicket(req: Request, res: Response) {
-//     try {
-//            const stage = await ticketsService.update(req.params.id, req.body);
-//            res.json(stage);
-//        } catch (err) {
-//            handleError(res, err);
-//        }
-// };
-export async function deleteTicket(req: Request, res: Response) {
+
+export async function purchaseTicket(req: Request, res: Response, next: NextFunction) {
+    try {
+        const stage = await ticketsService.create( req.body);
+        res.json(stage);
+    } catch (err) {
+        next(err)
+    }
+};
+export async function deleteTicket(req: Request, res: Response, next: NextFunction) {
     try {
         await ticketsService.deleteItem(req.params.id);
         res.status(204).send();
     } catch (err) {
-        handleError(res, err);
+        next(err)
     }
 };

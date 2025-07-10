@@ -1,0 +1,84 @@
+<div class="container mx-auto" *ngIf="festival">
+    <mat-card class="pb-4 ">
+        <mat-card-header>
+            <mat-card-title>
+                <div class="text-2xl neon">
+                    {{ festival.name }}
+                </div>
+                <div class="text-sm ">
+                    {{ festival.start_date | formatDate }} - {{ festival.end_date| formatDate }}
+                </div>
+            </mat-card-title>
+            <mat-card-subtitle>
+                <div class="text-sm pt-4">
+                    {{ festival.address }}
+                </div>
+            </mat-card-subtitle>
+        </mat-card-header>
+    </mat-card>
+
+    <div class="filters-section" [formGroup]="filterForm">
+        <mat-form-field class="filter-field">
+            <mat-label>Filter by Day</mat-label>
+            <input matInput [matDatepicker]="picker" formControlName="day" [min]="festival.start_date"
+                [max]="festival.end_date" />
+            <mat-hint>MM/DD/YYYY</mat-hint>
+            <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+            <mat-datepicker #picker></mat-datepicker>
+            <button *ngIf="filterForm.controls.day.value" matSuffix mat-icon-button (click)="clearDayFilter()">
+                <mat-icon>close</mat-icon>
+            </button>
+        </mat-form-field>
+
+        <mat-form-field class="filter-field">
+            <mat-label>Filter by Artist Name</mat-label>
+            <input matInput formControlName="artistName" />
+            <button *ngIf="filterForm.controls.artistName.value" matSuffix mat-icon-button
+                (click)="clearArtistNameFilter()">
+                <mat-icon>close</mat-icon>
+            </button>
+        </mat-form-field>
+    </div>
+
+    <mat-tab-group mat-stretch-tabs="false" mat-align-tabs="center" (selectedTabChange)="onTabChange($event)"
+        *ngIf="festival.stages && festival.stages.length > 0">
+        <mat-tab *ngFor="let stage of festival.stages" [label]="stage.name" class="neon">
+            <div class="grid grid-cols-3 gap-4">
+                <h3 *ngIf="performances.length === 0" class="no-performances-message">
+                    No performances found for this stage with the current filters.
+                </h3>
+                <mat-card *ngFor="let performance of performances" class="performance-card mat-elevation-z1">
+                    <mat-card-content>
+                        <div class="performance-details">
+                            <div class="neon">{{ performance.artist.name }}</div>
+                            <div class="text-[12px]">
+                                {{ performance.start_time | formatTime }} - {{ performance.end_time | formatTime }} on
+                                {{ performance.day | formatDate }}
+                            </div>
+                            <div class="artist-genre">{{ performance.artist.genre }}: {{performance.artist.subgenre}}
+                            </div>
+                        </div>
+                    </mat-card-content>
+                    <mat-card-actions>
+                        <app-primary-button label="Add to my lineup +"
+                            (btnClick)="addToLineup(festival.id, performance.id)"></app-primary-button>
+                    </mat-card-actions>
+                </mat-card>
+            </div>
+        </mat-tab>
+    </mat-tab-group>
+
+    <!-- Message if no stages found for the festival -->
+    <div *ngIf="!festival.stages || festival.stages.length === 0" class="no-stages-message">
+        No stages found for this festival.
+    </div>
+</div>
+
+<!-- Loading and Error Messages -->
+<div *ngIf="!festival && festivalId" class="loading-message">
+    Loading festival details...
+</div>
+
+<div *ngIf="!festivalId" class="error-message">
+    No festival ID provided. Please navigate from a festival list.
+</div>

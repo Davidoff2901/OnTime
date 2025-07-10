@@ -1,50 +1,58 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import * as festivalsService from '../services/festival.service'
-import { handleError } from "../helpers/httpError";
 
 
-export async function getAllFestivals(req: Request, res: Response) {
+export async function getAllFestivals(req: Request, res: Response, next: NextFunction) {
     try {
         const festivals = await festivalsService.findAll();
         res.status(200).json(festivals);
     } catch (err) {
-        handleError(res, err);
+        next(err)
     }
 };
 
-export async function getFestivalByID(req: Request, res: Response) {
+export async function getFestivalByID(req: Request, res: Response, next: NextFunction) {
     try {
         const festival = await festivalsService.findById(req.params.id);
         res.status(200).json(festival);
     } catch (err) {
-        handleError(res, err);
+        next(err)
+    }
+};
+export async function getFestivalByOrganizer(req: Request, res: Response, next: NextFunction) {
+    try {
+        const festival = await festivalsService.findByOrganizer(req.params.email);
+        res.status(200).json(festival);
+    } catch (err) {
+        next(err)
     }
 };
 
-export async function createFestival(req: Request, res: Response) {
+
+export async function createFestival(req: Request, res: Response, next:NextFunction) {
     try {
         const user = (req as Request & { user: { email: string } }).user;
 
         const festival = await festivalsService.create(req.body, user.email);
         res.status(201).json(festival);
     } catch (err) {
-        handleError(res, err);
+        next(err)
     }
 };
 
-export async function updateFestival(req: Request, res: Response) {
+export async function updateFestival(req: Request, res: Response, next: NextFunction) {
     try {
         const festival = await festivalsService.update(req.params.id, req.body);
-        res.json(festival);
+        res.status(200).json(festival);
     } catch (err) {
-        handleError(res, err);
+        next(err)
     }
 };
-export async function deleteFestival(req: Request, res: Response) {
+export async function deleteFestival(req: Request, res: Response, next: NextFunction) {
     try {
         await festivalsService.deleteItem(req.params.id);
         res.status(204).send();
     } catch (err) {
-        handleError(res, err);
+        next(err)
     }
 };

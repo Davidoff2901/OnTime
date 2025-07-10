@@ -1,11 +1,12 @@
 import { HttpInterceptorFn } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { AuthService } from '../services/auth.service';
+import { catchError, throwError } from 'rxjs';
 
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
     const authService = inject(AuthService)
-    const token = authService.token();
+    const token = authService.loadJwt();
     if (token) {
         req = req.clone({
             setHeaders: {
@@ -15,3 +16,18 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
     }
     return next(req);
 }
+
+
+export const authErrorInterceptor: HttpInterceptorFn = (req, next) => {
+  const authService = inject(AuthService);
+
+  return next(req).pipe(
+    catchError((err) => {
+      if (err.status === 401) {
+        authService.logoutUser(); 
+      }
+      
+      return throwError(() => err);
+    })
+  );
+};

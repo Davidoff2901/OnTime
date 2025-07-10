@@ -6,14 +6,66 @@ import { getUserIdByEmail } from "./user.service";
 
 
 export async function findAll() {
-    return await db.festivals.findMany();
+    const festivals = await db.festivals.findMany({
+        select: { id: true, name: true, start_date: true, end_date: true, latitude: true, longitude: true, address: true, stages: true },
+    });
+    if (!festivals) throw new HttpError(404, 'No festivals found');
+    return festivals;
 };
 export async function findById(id: string) {
-    const festival = await db.festivals.findUnique({ where: { id } });
+    const festival = await db.festivals.findUnique({
+        where: { id },
+        include: {
+            stages: true,
+            performances: { include: { artist: true, stage: true } }
+        }
+    });
     if (!festival) throw new HttpError(404, 'Festival not found');
     return festival;
 };
-export async function create(data: { name: string, organizerId: string, latitude: number, longitude: number, start_date: Date, end_date: Date }, email: string) {
+export async function findByOrganizer(organizerEmail: string) {
+    const organizer = await db.users.findUnique({
+        where: {
+            email: organizerEmail
+        }, select: {
+            id: true
+        }
+    })
+    if (!organizer) throw new HttpError(404, "Festival of organizer not found")
+    const organizerId = organizer.id
+
+
+    const festivals = await db.festivals.findMany({
+        where: { organizerId: organizerId },
+        select: {
+            id: true,
+            name: true,
+            start_date: true,
+            end_date: true,
+            latitude: true,
+            longitude: true,
+            address: true,
+            stages: true,
+            performances: {
+                include: {
+                    stage: true,
+                    artist: true
+                }
+            }
+        }
+    });
+    if (!festivals) throw new HttpError(404, 'Festivals not found');
+
+    return festivals;
+};
+// export async function getUserFestivals(email: string) {
+//     const userId = await getUserIdByEmail(email)
+
+//     const festivals = await db.tickets.findMany({
+//         where: {userId: userId?.id}
+//     })
+// }
+export async function create(data: { name: string, organizerId: string, latitude: number, longitude: number, address: string, start_date: Date, end_date: Date }, email: string) {
     if (data.start_date >= data.end_date) {
         throw new HttpError(400, 'Start date must be before end date');
     }
@@ -28,16 +80,17 @@ export async function create(data: { name: string, organizerId: string, latitude
 
         return await db.festivals.create({
             data, select: {
+                id: true,
                 name: true,
                 created_at: true,
                 start_date: true,
                 end_date: true,
                 latitude: true,
                 longitude: true,
+                address: true
             }
         });
     } catch (error: any) {
-        console.log(error)
         if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002') {
             const target = (error.meta?.target as string[]) || [];
 
@@ -78,6 +131,8 @@ export async function update(id: string, data: { name?: string, location?: numbe
 export async function deleteItem(id: string) {
     await getByIdOrThrowError('festivals', id, "Festival not found")
     try {
+        await db.artistPerformance.deleteMany({ where: { festivalId: id } });
+        await db.stages.deleteMany({ where: { festivalId: id } });
         return await db.festivals.delete({ where: { id } });
     } catch {
         throw new HttpError(500, 'Failed to delete festival');

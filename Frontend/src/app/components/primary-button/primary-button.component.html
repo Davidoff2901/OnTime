@@ -1,3 +1,10 @@
-<button mat-raised-button (click)="btnClick.emit()" class="bg-teal-950">
+@if (icon()) {
+<button (click)="btnClick.emit()" class="cursor-pointer ">
+    <mat-icon [style]="'color: '+ color()" class="!text-3xl !w-8 !h-8">{{icon()}}</mat-icon>
+</button>
+}
+@else {
+<button (click)="btnClick.emit()" [class]="'neon'">
     {{label()}}
 </button>
+}

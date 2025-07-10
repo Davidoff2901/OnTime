@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "styles/colors";
 
 html,
 body {
@@ -8,7 +9,7 @@ body {
 body {
     margin: 0;
     font-family: Roboto, "Helvetica Neue", sans-serif;
-    color: #212121;
+    color: #fff;
     background-color: #fff;
     line-height: 1.5;
 }
@@ -17,4 +18,68 @@ html {
     font-size: 16px;
     -webkit-font-smoothing: antialiased;
     scroll-behavior: smooth;
+}
+
+.mat-mdc-dialog-container {
+    max-width: 90vw !important;
+    max-height: 90vh !important;
+
+    background-color: #f8f8f8;
+    border-radius: 12px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23);
+    padding: 24px; 
+}
+
+.mat-mdc-dialog-title {
+    font-size: 1.8em;
+    font-weight: 600;
+    color: #fff;
+    margin-bottom: 20px;
+    text-align: center;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 15px;
+}
+
+.mat-mdc-dialog-content {
+    font-size: 1.1em;
+    color: #555;
+    line-height: 1.6;
+    padding-top: 10px;
+    padding-bottom: 20px;
+    text-align: justify;
+    overflow-y: auto;
+    flex-grow: 1;
+}
+
+.mat-mdc-dialog-actions {
+    padding-top: 20px;
+    justify-content: flex-end;
+    gap: 10px;
+    border-top: 1px solid #eee;
+    margin-top: 20px;
+}
+
+.mat-mdc-dialog-actions button.mdc-button {
+    min-width: 100px;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-weight: 500;
+    transition: background-color 0.3s ease;
+}
+
+.mat-mdc-dialog-actions button.mdc-button.mat-mdc-button-base:not(.mat-mdc-unelevated-button) {
+    color: #007bff;
+
+    &:hover {
+        background-color: rgba(0, 123, 255, 0.05);
+    }
+}
+
+.mat-mdc-dialog-actions button.mdc-button.mat-mdc-unelevated-button.mat-mdc-button-base {
+    background-color: #007bff;
+    color: white;
+
+    &:hover {
+        background-color: #0056b3;
+    }
 }

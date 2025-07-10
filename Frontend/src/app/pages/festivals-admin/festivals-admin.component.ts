@@ -1,133 +1,214 @@
-import { Component, inject, } from '@angular/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Component, inject, OnInit, } from '@angular/core';
 import { MATERIAL_FORM_IMPORTS } from '../../helpers/material-imports';
 import { FestivalsService } from '../../services/festivals.service';
-import { MatTimepickerModule } from '@angular/material/timepicker';
-import { MatDatepickerModule } from '@angular/material/datepicker';
-import { provideNativeDateAdapter } from '@angular/material/core';
-import * as L from 'leaflet';
-import { debounceTime, distinctUntilChanged, Subscription } from 'rxjs';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
+import { StagesService } from '../../services/stage.service';
+import { TicketsService } from '../../services/tickets.service';
+import { Festival, Performances, Stage, } from '../../models/models.type';
+import { AuthService } from '../../services/auth.service';
+import { MatDialog, } from '@angular/material/dialog';
+import { MatCardModule } from '@angular/material/card';
+import { CommonModule } from '@angular/common';
+import { MatExpansionModule } from '@angular/material/expansion';
+import { MatIconModule } from '@angular/material/icon';
+import { FestivalDialogComponent } from '../../components/festival-dialog/festival-dialog.component';
+import { StageDialogComponent } from '../../components/stage-dialog/stage-dialog.component';
+import { ConfirmDialogComponent } from '../../components/confirm-dialog/confirm-dialog.component';
+import { ScheduleComponent } from '../../components/schedule/schedule.component';
+import { PerformancesService } from '../../services/performance.service';
+import { PrimaryButtonComponent } from "../../components/primary-button/primary-button.component";
+import { FormatDatePipe, FormatTimePipe } from '../../helpers/formatters.pipe';
 @Component({
   selector: 'app-festivals-admin',
-  imports: [MATERIAL_FORM_IMPORTS, MatTimepickerModule, MatDatepickerModule, ReactiveFormsModule],
-  providers: [provideNativeDateAdapter()],
+  imports: [MATERIAL_FORM_IMPORTS, MatCardModule, CommonModule,
+    MatIconModule, MatExpansionModule, PrimaryButtonComponent, FormatDatePipe, FormatTimePipe],
+  providers: [],
   templateUrl: './festivals-admin.component.html',
   styleUrl: './festivals-admin.component.scss'
 })
-export class FestivalsAdminComponent {
-  festivalForm: FormGroup;
-  artistForm: FormGroup;
+export class FestivalsAdminComponent implements OnInit {
   festivalsService = inject(FestivalsService)
-  festivals = this.festivalsService.festivals
+  performanceService = inject(PerformancesService)
+  stagesService = inject(StagesService)
+  ticketsService = inject(TicketsService)
+  authService = inject(AuthService)
+  private dialog = inject(MatDialog);
+  snackBar = inject(MatSnackBar)
 
-  map!: L.Map;
-  marker!: L.Marker;
-  updatingFromMap = false;
-  formSub!: Subscription;
-
-  constructor(private fb: FormBuilder) {
-    this.festivalForm = this.fb.group({
-      name: ['', Validators.required],
-      latitude: ['', Validators.required],
-      longitude: ['', Validators.required],
-      start_date: ['', [Validators.required]],
-      end_date: ['', Validators.required],
-      // organiserId: ['18c93b9a-3e86-460b-8cf7-f972ff81d67f']
-    });
-    this.artistForm = this.fb.group({
-      name: ['', Validators.required],
-      start_time: ['', Validators.required],
-      end_time: ['', Validators.required],
-    })
-
-    this.festivalsService.getFestivals().subscribe({
+  ngOnInit(): void {
+    this.loadFestivals()
+  }
+  loadFestivals() {
+    this.festivalsService.getFestivalsByOrganizer(this.authService.getEmail()!).subscribe({
       next: res => {
+        console.log(res)
         this.festivalsService.festivals.set(res)
       },
       error: err => {
-        this.festivalsService.error.set(err)
+        this.snackBar.open(err.error.message, 'Dismiss', { duration: 3000 });
       }
     })
-
-  }
-  ngAfterViewInit(): void {
-    this.initMap();
-    this.subscribeToFormChanges();
   }
 
-  initMap(): void {
-    this.map = L.map('map').setView([51.505, -0.09], 13);
+  openCreateFestivalDialog(): void {
+    const dialogRef = this.dialog.open(FestivalDialogComponent, {
+      height: '80%',
+      panelClass: 'custom-dialog-container',
+      data: { festival: undefined }
+    });
 
-    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      maxZoom: 19,
-      attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-    }).addTo(this.map);
-
-    this.map.on('click', (e: L.LeafletMouseEvent) => {
-      const lat = e.latlng.lat;
-      const lng = e.latlng.lng;
-      this.setOrMoveMarker(lat, lng);
-      this.updateForm(lat, lng);
+    dialogRef.afterClosed().subscribe((result: Festival) => {
+      if (result) {
+        this.festivalsService.createFestival(result).subscribe({
+          next: res => {
+            this.snackBar.open(`Festival "${res.name}" created successfully!`, 'Close', { duration: 2000 });
+            this.loadFestivals();
+          },
+          error: err => {
+            this.snackBar.open(err.error.message, 'Dismiss', { duration: 3000 });
+          }
+        });
+      }
     });
   }
 
-  setOrMoveMarker(lat: number, lng: number) {
-    if (this.marker) {
-      this.marker.setLatLng([lat, lng]);
-    } else {
-      this.marker = L.marker([lat, lng], { draggable: true }).addTo(this.map);
-      this.marker.on('dragend', (event) => {
-        const pos = (event.target as L.Marker).getLatLng();
-        this.updateForm(pos.lat, pos.lng);
-      });
+  openUpdateFestivalDialog(festival: Festival): void {
+    const dialogRef = this.dialog.open(FestivalDialogComponent, {
+      data: { festival: festival }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.festivalsService.updateFestival(result).subscribe({
+          next: res => {
+            this.snackBar.open(`Festival "${res.name}" updated successfully!`, 'Close', { duration: 2000 });
+            this.loadFestivals();
+          },
+          error: err => {
+            this.snackBar.open(err.error.message, 'Dismiss', { duration: 3000 });
+          }
+        });
+      }
+    });
+  }
+
+  openAddStageDialog(festivalId: string): void {
+    const dialogRef = this.dialog.open(StageDialogComponent, {
+      data: { festivalId: festivalId }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.stagesService.createStage(result).subscribe({
+          next: res => {
+            this.snackBar.open(`Stage "${res.name}" created successfully!`, 'Close', { duration: 2000 });
+            this.loadFestivals();
+          },
+          error: err => {
+            this.snackBar.open(err.error.message, 'Dismiss', { duration: 3000 });
+          }
+        });
+      }
+    });
+  }
+  openUpdateStageDialog(stage: Stage): void {
+    const dialogRef = this.dialog.open(StageDialogComponent, {
+      data: { stage: stage, }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.stagesService.updateStage(result).subscribe({
+          next: res => {
+            this.snackBar.open(`Stage "${res.name}" created successfully!`, 'Close', { duration: 2000 });
+            this.loadFestivals();
+          },
+          error: err => {
+            this.snackBar.open(err.error.message, 'Dismiss', { duration: 3000 });
+          }
+        });
+      }
+    });
+  }
+  deleteStage(stageId: string) {
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      data: { stageId: stageId, title: "Are you sure you want to delete this stage?" }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.stagesService.deleteStage(stageId).subscribe({
+          next: res => {
+            this.snackBar.open(`Stage deleted successfully!`, 'Close', { duration: 2000 });
+            this.loadFestivals();
+          },
+          error: err => {
+            this.snackBar.open(err.error.message, 'Dismiss', { duration: 3000 });
+          }
+        });
+      }
+    });
+  }
+  openScheduleDialog(festival: Festival): void {
+    if (festival.stages?.length === 0) {
+      this.snackBar.open("Create stages first to add schedules", 'Dismiss', { duration: 3000 });
+      return;
     }
-  }
+    const dialogRef = this.dialog.open(ScheduleComponent, {
+      data: { festival: festival }
+    });
 
-  updateForm(lat: number, lng: number) {
-    this.updatingFromMap = true;
-    this.festivalForm.patchValue({
-      latitude: lat,
-      longitude: lng,
-    }, { emitEvent: true });
-    setTimeout(() => this.updatingFromMap = false, 100); // Short delay to avoid conflict
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.performanceService.createPerformance(result).subscribe({
+          next: res => {
+            this.snackBar.open(`Performance created successfully!`, 'Close', { duration: 2000 });
+            this.loadFestivals()
+          },
+          error: err => {
+            this.snackBar.open(err.error.message, 'Dismiss', { duration: 3000 });
+          }
+        });
+      }
+    });
   }
+  openUpdateScheduleDialog(performance: Performances, festival: Festival): void {
+    const dialogRef = this.dialog.open(ScheduleComponent, {
+      data: { artistPerformance: performance, festival: festival }
+    });
 
-  subscribeToFormChanges() {
-    this.formSub = this.festivalForm.valueChanges
-      .pipe(
-        debounceTime(200),
-        distinctUntilChanged((prev, curr) =>
-          prev.latitude === curr.latitude && prev.longitude === curr.longitude
-        )
-      )
-      .subscribe(({ latitude, longitude }) => {
-        if (!this.updatingFromMap && this.isValidLatLng(latitude, longitude)) {
-          this.setOrMoveMarker(Number(latitude), Number(longitude));
-          this.map.setView([Number(latitude), Number(longitude)], this.map.getZoom());
-        }
-      });
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.performanceService.updatePerformance(result.performanceId, result.data).subscribe({
+          next: res => {
+            this.snackBar.open(`Performance updated successfully!`, 'Close', { duration: 2000 });
+            this.loadFestivals()
+          },
+          error: err => {
+            this.snackBar.open(err.error.message, 'Dismiss', { duration: 3000 });
+          }
+        });
+      }
+    });
   }
+  deletePerformance(performanceId: string) {
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      data: { performanceId: performanceId, title: "Are you sure you want to delete this performance?" }
+    });
 
-  isValidLatLng(lat: any, lng: any): boolean {
-    return !isNaN(lat) && !isNaN(lng) &&
-      lat >= -90 && lat <= 90 &&
-      lng >= -180 && lng <= 180;
-  }
-
-  ngOnDestroy(): void {
-    this.formSub?.unsubscribe();
-  }
-  onSubmit(): void {
-    if (this.festivalForm.valid) {
-      this.festivalsService.createFestival(this.festivalForm.value).subscribe({
-        next: res => {
-
-        },  
-        error: err => {
-          this.festivalsService.error.set(err.error.message)
-        }
-      })
-    }
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.performanceService.deletePerofrmance(performanceId).subscribe({
+          next: res => {
+            this.snackBar.open(`Performance deleted successfully!`, 'Close', { duration: 2000 });
+            this.loadFestivals();
+          },
+          error: err => {
+            this.snackBar.open(err.error.message, 'Dismiss', { duration: 3000 });
+          }
+        });
+      }
+    });
   }
 }
